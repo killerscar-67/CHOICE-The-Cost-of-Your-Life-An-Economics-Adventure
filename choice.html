@@ -910,7 +910,7 @@ const ZH_UI = {
   'Create Your Character': '建立你的角色', 'Who will you become this year?': '今年的你會成為怎樣的人？', 'Your Name': '你的姓名', 'Enter your name': '輸入姓名', 'Age': '年齡', 'Choose Your Personality': '選擇你的性格', 'Begin Your Story →': '開始你的故事 →',
   'Welcome, Economist': '歡迎，經濟學家', 'Year 1 • Tutorial': '第一年 • 教學', 'Resources are limited.': '資源有限。', 'Every choice has a cost.': '每個選擇都有代價。', 'Decisions have delayed consequences.': '決定會帶來延遲後果。', 'There is no "right" answer.': '沒有唯一的「正確」答案。', 'Understood — Let\'s Begin →': '明白了，開始吧 →',
   'Life Events': '人生事件', 'Calculation Challenge': '計算挑戰', 'Test Your Understanding': '測試你的理解', 'Mid-Year Report': '年中報告', 'Continue Your Journey →': '繼續你的旅程 →', 'Economics Lab': '經濟學實驗室', 'HKDSE Challenge': 'HKDSE 挑戰', 'Your Life Summary': '你的人生總結', 'Choice:': '選擇：', 'Immediate effects:': '即時影響：', 'Opportunity cost:': '機會成本：',
-  'Correct!': '答對！', 'Not quite.': '不完全正確。', 'Next Question →': '下一題 →', 'See Final Results →': '查看最終結果 →', 'Year 1 Complete': '第一年完成', 'Achievements Unlocked': '已解鎖成就', 'Economist Level': '經濟學家級別', 'Play Again': '再玩一次', 'View Session Data': '查看遊戲資料'
+  'Correct!': '答對！', 'Not quite.': '不完全正確。', 'Next →': '下一題 →', 'Next Question →': '下一題 →', 'See Final Results →': '查看最終結果 →', 'Year 1 Complete': '第一年完成', 'Achievements Unlocked': '已解鎖成就', 'Economist Level': '經濟學家級別', 'Play Again': '再玩一次', 'View Session Data': '查看遊戲資料', 'Money': '金錢', 'Time': '時間', 'Knowledge': '知識', 'Happiness': '快樂', 'Relations': '人際關係', 'Reputation': '聲譽', 'Life Event': '人生事件', 'Question': '問題', 'Calculation Challenge': '計算挑戰', 'Test Your Understanding': '測試你的理解', 'Economic Profile': '經濟學檔案', 'Best Decision': '最佳決定', 'Biggest Trade-off': '最大取捨', 'Total Questions Accuracy': '問題總體準確率', 'Calculation Score': '計算分數', 'Events Experienced': '經歷的人生事件', 'Economist Tip': '經濟學家提示'
 };
 
 const ZH_CHOICES = {
@@ -931,6 +931,24 @@ const ZH_CHOICES = {
   health: '🏥 興建公立醫院（$1 億）', education: '🏫 興建 5 間新學校（$1 億）', transport: '🚇 延伸港鐵至服務不足的地區（$1 億）', split: '⚖️ 分配預算至醫療、教育、交通和住屋'
 };
 
+const ZH_CALCULATIONS = {
+  calc1: { title: '計算一：基本機會成本', question: '一名學生可用四小時來做以下其中一項：\n• 烘焙 20 個紙杯蛋糕，或\n• 製作 40 個三文治\n\n生產一個紙杯蛋糕的機會成本是多少？', options: ['A. 1 個三文治', 'B. 2 個三文治', 'C. 40 個三文治', 'D. 20 個三文治'], explanation: '如果 20 個紙杯蛋糕等於 40 個三文治，那麼 1 個紙杯蛋糕等於 40 ÷ 20 = 2 個三文治。'},
+  calc2: { title: '計算二：生產可能曲線', question: '一個經濟體可以生產以下不同組合的食物和衣物：', subquestions: [{ q: '由組合 B 移至組合 C 的機會成本是多少？', options: ['A. 10 單位衣物', 'B. 20 單位食物', 'C. 20 單位衣物', 'D. 40 單位食物'], explanation: '由 B 移至 C，食物增加 20（20→40），衣物減少 20（90→70），所以機會成本是 20 單位衣物。'}, { q: '關於組合 D，以下哪項正確？', options: ['A. 這是無效率的生產', 'B. 以現有資源無法達到', 'C. 這顯示資源被有效運用', 'D. 生產食物的機會成本是零'], explanation: '位於生產可能曲線上的點（例如 D）代表有效率的生產，因為所有資源都充分使用。'}]},
+  calc3: { title: '計算三：比較優勢', question: '兩名學生在一小時內可以生產以下數量的文章和圖表：', subquestions: [{ q: 'Alex 生產一篇文章的機會成本是多少？', options: ['A. 0.5 張圖表', 'B. 2 張圖表', 'C. 4 張圖表', 'D. 1 張圖表'], explanation: 'Alex 可製作 4 篇文章或 2 張圖表，因此 1 篇文章 = 2 ÷ 4 = 0.5 張圖表。'}, { q: '誰在生產圖表方面有比較優勢？', options: ['A. Alex', 'B. Betty', 'C. 沒有人', 'D. 無法判斷'], explanation: 'Betty 生產 1 張圖表的機會成本較低，因此她有比較優勢。'}]},
+  calc4: { title: '計算四：預期值', question: '一項初創投資有以下結果：\n• 有 30% 機會回報 $50,000\n• 有 50% 機會回報 $10,000\n• 有 20% 機會血本無歸（$0）\n\n這項投資的預期值是多少？', options: ['A. $20,000', 'B. $60,000', 'C. $10,000', 'D. $30,000'], explanation: '預期值 = (0.30 × $50,000) + (0.50 × $10,000) + (0.20 × $0) = $20,000。'}
+};
+
+const ZH_HKDSE = {
+  hkdse1: { question: '一名學生星期六有四小時空閒。他可以工作賺取 HK$320，或溫習經濟學考試。他選擇溫習。\n\n以下哪項最能代表他的決定的機會成本？', options: ['A. HK$0', 'B. HK$320', 'C. 課本的成本', 'D. 他的總溫習時間'], explanation: '機會成本是被放棄的最佳選項的價值。選擇溫習便放棄了 HK$320 的收入。'},
+  hkdse2: { question: 'Amy 買了一張 HK$600 的音樂節門票。音樂節當天，她獲邀參加一場有助大學申請的免費事業講座，於是選擇參加講座。\n\n以下哪項正確？', options: ['A. HK$600 的沉沒成本應令她去音樂節', 'B. 參加講座的機會成本是 HK$600', 'C. 參加講座的機會成本是音樂節帶來的享受', 'D. 講座免費，所以沒有機會成本'], explanation: 'HK$600 是沉沒成本，不應影響決定。參加講座的機會成本是被放棄的最佳選項，即音樂節的享受。'},
+  hkdse3: { question: '一間工廠以相同資源可以生產 100 部汽車或 200 部電單車。生產一部汽車的機會成本是多少？', options: ['A. 0.5 部電單車', 'B. 1 部電單車', 'C. 2 部電單車', 'D. 200 部電單車'], explanation: '100 部汽車等於 200 部電單車，因此 1 部汽車 = 200 ÷ 100 = 2 部電單車。'},
+  hkdse4: { question: '以下哪項不是機會成本的例子？', options: ['A. 學生放棄兼職工作而入讀大學', 'B. 政府興建醫院而不興建學校', 'C. 公司支付辦公室租金', 'D. 農民種植稻米而不種植蔬菜'], explanation: '支付租金是直接的貨幣成本，不是機會成本。機會成本是被放棄的最佳選項。'},
+  hkdse5: { question: '為甚麼生產可能曲線內的一點代表無效率的生產？（選出最佳解釋）', options: ['A. 經濟體沒有足夠資源', 'B. 經濟體沒有充分或有效地使用所有資源', 'C. 經濟體應同時增加兩種產品的產量', 'D. 以現有科技無法達到該點'], explanation: '曲線內的點表示資源未被充分使用或使用效率不高，經濟體可以在不犧牲任何一種產品的情況下增加產量。'},
+  hkdse6: { question: 'David 一小時可生產 10 個蛋糕或 5 個批；Emily 一小時可生產 8 個蛋糕或 4 個批。\n\n以下哪項正確？', options: ['A. David 在兩種產品都有絕對優勢', 'B. Emily 在蛋糕生產方面有比較優勢', 'C. David 在批生產方面有比較優勢', 'D. 兩人在任何產品都沒有比較優勢'], explanation: 'David 兩種產品的產量都較高，因此在兩者都有絕對優勢。但兩人的機會成本相同，所以沒有人有比較優勢。'},
+  hkdse7: { question: '一名學生花 HK$200 購買不可退款的健身會籍。去過一次後，她發現自己不喜歡健身室。朋友同時邀請她參加免費瑜伽課。從經濟學家的角度，她應該怎樣做？', options: ['A. 因為已付款，所以繼續去健身室', 'B. 去瑜伽課，因為健身會籍是沉沒成本', 'C. 計算每次平均成本後再決定', 'D. 兩者都不參加，留在家中'], explanation: 'HK$200 是沉沒成本，不能收回，與未來決定無關。她應根據未來利益作選擇。'},
+  hkdse8: { question: '政府有 HK$100 億固定預算，必須在興建公路（利益：$80 億）和鐵路（利益：$120 億）之間選擇，不能兩者都做。選擇鐵路的機會成本是多少？', options: ['A. HK$100 億', 'B. HK$40 億', 'C. HK$80 億（公路的利益）', 'D. HK$200 億'], explanation: '機會成本是被放棄的最佳選項的價值。鐵路的最佳替代方案是利益 $80 億的公路。'}
+};
+
 // ==================== GAME ENGINE ====================
 const G = {
   state: null,
@@ -943,6 +961,21 @@ const G = {
     const [title, desc, context] = ZH_EVENTS[event.id];
     const choices = event.choices.map(choice => ({ ...choice, text: ZH_CHOICES[choice.id] || choice.text }));
     return { ...event, title, desc, context, choices };
+  },
+
+  localizedCalculation(calc) {
+    if (this.language !== 'zh-HK' || !ZH_CALCULATIONS[calc.id]) return calc;
+    const translation = ZH_CALCULATIONS[calc.id];
+    const localized = { ...calc, title: translation.title, question: translation.question };
+    if (translation.options) localized.options = calc.options.map((option, i) => ({ ...option, text: translation.options[i] }));
+    if (translation.subquestions) localized.subquestions = calc.subquestions.map((sub, i) => ({ ...sub, q: translation.subquestions[i].q, explanation: translation.subquestions[i].explanation, options: sub.options.map((option, j) => ({ ...option, text: translation.subquestions[i].options[j] })) }));
+    return localized;
+  },
+
+  localizedQuestion(question) {
+    if (this.language !== 'zh-HK' || !ZH_HKDSE[question.id]) return question;
+    const translation = ZH_HKDSE[question.id];
+    return { ...question, question: translation.question, explanation: translation.explanation, options: question.options.map((option, i) => ({ ...option, text: translation.options[i] })) };
   },
 
   applyLanguage() {
@@ -960,7 +993,7 @@ const G = {
       document.querySelectorAll('.form-label')[2].textContent = '選擇你的性格';
       document.querySelector('.btn-primary').textContent = '開始你的故事 →';
     }
-    const replacements = ['The Cost of Your Life', 'An Economics Adventure for HKDSE Students', 'Make real decisions with real consequences', 'Learn Opportunity Cost through experience', 'Practice HKDSE-style exam questions', 'About 40–55 minutes per session', 'Create Your Character', 'Who will you become this year?', 'Your Name', 'Age', 'Choose Your Personality', 'Begin Your Story →', 'Welcome, Economist', 'Year 1 • Tutorial', 'Understood — Let\'s Begin →'];
+    const replacements = ['The Cost of Your Life', 'An Economics Adventure for HKDSE Students', 'Make real decisions with real consequences', 'Learn Opportunity Cost through experience', 'Practice HKDSE-style exam questions', 'About 40–55 minutes per session', 'Create Your Character', 'Who will you become this year?', 'Your Name', 'Age', 'Choose Your Personality', 'Begin Your Story →', 'Welcome, Economist', 'Year 1 • Tutorial', 'Understood — Let\'s Begin →', 'Money', 'Time', 'Knowledge', 'Happiness', 'Relations', 'Reputation', 'Life Event', 'Calculation Challenge', 'Test Your Understanding', 'Economic Profile', 'Best Decision', 'Biggest Trade-off', 'Total Questions Accuracy', 'Calculation Score', 'Events Experienced', 'Economist Tip'];
     replacements.forEach(english => {
       document.querySelectorAll('.app *').forEach(el => {
         if (el.children.length === 0 && el.textContent.trim() === english) el.textContent = this.ui(english);
@@ -1022,6 +1055,7 @@ const G = {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + id).classList.add('active');
     this.applyLanguage();
+    queueMicrotask(() => this.applyLanguage());
     window.scrollTo(0, 0);
   },
 
@@ -1378,7 +1412,7 @@ const G = {
 
   renderCalculation() {
     const main = document.getElementById('calc-main');
-    const calc = CALCULATIONS[this.state.calcIndex];
+    const calc = this.localizedCalculation(CALCULATIONS[this.state.calcIndex]);
     if (!calc) { this.toHKDSE(); return; }
 
     let html = `<div class="calc-wrap fade-in">`;
@@ -1520,7 +1554,7 @@ const G = {
 
   renderHKDSE() {
     const main = document.getElementById('hkdse-main');
-    const q = HKDSE_QUESTIONS[this.state.hkdseIndex];
+    const q = this.localizedQuestion(HKDSE_QUESTIONS[this.state.hkdseIndex]);
     if (!q) { this.toReport(); return; }
 
     let html = `<div class="calc-wrap fade-in">`;
