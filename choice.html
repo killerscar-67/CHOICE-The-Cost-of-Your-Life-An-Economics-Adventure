@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#0b1120">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="CHOICE: The Cost of Your Life — An educational economics text-RPG for HKDSE students. Learn opportunity cost through experience.">
+<meta name="keywords" content="economics, HKDSE, opportunity cost, education game, text RPG">
+<meta property="og:title" content="CHOICE: The Cost of Your Life">
+<meta property="og:description" content="An interactive economics adventure where every choice has a cost.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>CHOICE: The Cost of Your Life</title>
+<style>
+:root{--bg:#0b1120;--surface:#151e32;--surface-light:#1e293b;--primary:#3b82f6;--primary-dark:#1d4ed8;--accent:#f59e0b;--accent-light:#fbbf24;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--text:#f8fafc;--text-muted:#94a3b8;--text-dim:#64748b;--border:#1e293b;--shadow:0 4px 20px rgba(0,0,0,0.4);--shadow-lg:0 10px 40px rgba(0,0,0,0.5)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+@keyframes fadeIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes statPop{0%{transform:scale(1)}50%{transform:scale(1.25);color:var(--accent)}100%{transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200%0}100%{background-position:200%0}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.fade-in{animation:fadeIn .5s ease-out forwards}
+.slide-up{animation:slideUp .6s ease-out forwards}
+.app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative}
+.header{padding:14px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.header-title{font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.header-subtitle{font-size:12px;color:var(--text-dim);margin-top:2px}
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.stat-item{background:rgba(11,17,32,.6);border-radius:12px;padding:10px 8px;text-align:center;border:1px solid var(--border);transition:all .3s ease}
+.stat-item.pop{animation:statPop .5s ease;border-color:var(--accent);background:rgba(245,158,11,.08)}
+.stat-icon{font-size:18px;margin-bottom:3px}
+.stat-value{font-size:13px;font-weight:800}
+.stat-label{font-size:9px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em}
+.progress-wrap{padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border)}
+.progress-bar{height:5px;background:rgba(11,17,32,.6);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.progress-text{font-size:11px;color:var(--text-dim);text-align:center;margin-top:6px;font-weight:500}
+.main{flex:1;padding:16px;overflow-y:auto}
+.card{background:var(--surface);border-radius:18px;padding:22px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.card-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.card-text{font-size:14px;line-height:1.7;color:var(--text-muted)}
+.event-card{background:var(--surface);border-radius:22px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-lg);margin-bottom:16px}
+.event-header{background:linear-gradient(135deg,#1e3a5f,#2563eb);padding:22px 20px;position:relative}
+.event-badge{display:inline-block;background:rgba(255,255,255,.15);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;color:#fff}
+.event-title{font-size:24px;font-weight:800;color:#fff;line-height:1.2}
+.event-body{padding:22px 20px}
+.event-desc{font-size:15.5px;line-height:1.85;color:var(--text);margin-bottom:12px}
+.event-context{font-size:13px;color:#fbbf24;font-style:italic;padding:12px;background:rgba(245,158,11,.08);border-radius:10px;border-left:3px solid var(--accent);line-height:1.6}
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice-btn{background:var(--surface-light);border:2px solid var(--border);border-radius:16px;padding:18px 20px;color:var(--text);font-family:inherit;font-size:14.5px;font-weight:600;text-align:left;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;gap:14px;width:100%;touch-action:manipulation}
+.choice-btn:hover{border-color:var(--primary);background:rgba(59,130,246,.08);transform:translateX(5px)}
+.choice-btn:active{transform:scale(.98)}
+.choice-icon{font-size:22px;flex-shrink:0}
+.choice-text{flex:1;line-height:1.5}
+.reflection-box{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(245,158,11,.08));border:1px solid rgba(59,130,246,.4);border-radius:16px;padding:18px;margin:16px 0}
+.reflection-title{font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.reflection-text{font-size:14px;line-height:1.75;color:var(--text)}
+.consequence-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(11,17,32,.96);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.consequence-box{background:var(--surface);border-radius:24px;padding:32px 28px;max-width:420px;width:100%;border:1px solid var(--border);box-shadow:var(--shadow-lg);text-align:center}
+.consequence-emoji{font-size:52px;margin-bottom:14px;animation:float 3s ease-in-out infinite}
+.consequence-title{font-size:22px;font-weight:800;margin-bottom:10px}
+.consequence-desc{font-size:14.5px;color:var(--text-muted);line-height:1.7;margin-bottom:18px}
+.consequence-stats{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:20px}
+.consequence-stat{background:rgba(11,17,32,.6);padding:7px 14px;border-radius:24px;font-size:12.5px;font-weight:700;border:1px solid var(--border)}
+.consequence-stat.up{color:var(--success);border-color:rgba(16,185,129,.3)}
+.consequence-stat.down{color:var(--danger);border-color:rgba(239,68,68,.3)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;border-radius:14px;padding:16px 28px;font-family:inherit;font-size:15.5px;font-weight:800;cursor:pointer;transition:all .25s ease;width:100%;touch-action:manipulation}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(59,130,246,.35)}
+.btn-secondary{background:var(--surface-light);color:var(--text);border:2px solid var(--border);border-radius:14px;padding:14px 24px;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;transition:all .2s ease;width:100%;touch-action:manipulation}
+.btn-secondary:hover{border-color:var(--primary)}
+.start-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;background:linear-gradient(180deg,var(--bg) 0%,#0f172a 100%)}
+.start-logo{font-size:68px;margin-bottom:18px;animation:float 4s ease-in-out infinite}
+.start-title{font-size:36px;font-weight:900;margin-bottom:10px;background:linear-gradient(135deg,#fff,var(--accent-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.start-subtitle{font-size:16px;color:var(--text-muted);margin-bottom:36px;max-width:340px;line-height:1.7}
+.start-features{display:flex;flex-direction:column;gap:10px;margin-bottom:36px;width:100%;max-width:340px}
+.start-feature{display:flex;align-items:center;gap:14px;background:var(--surface);padding:14px 18px;border-radius:14px;border:1px solid var(--border);font-size:13.5px;color:var(--text-muted);text-align:left}
+.start-feature-icon{font-size:22px;flex-shrink:0}
+.start-btn{background:linear-gradient(135deg,var(--accent),#d97706);color:#0f172a;border:none;border-radius:18px;padding:20px 48px;font-family:inherit;font-size:19px;font-weight:900;cursor:pointer;transition:all .3s ease;width:100%;max-width:340px;touch-action:manipulation}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(245,158,11,.3)}
+.char-screen{padding:24px;min-height:100vh}
+.char-title{font-size:26px;font-weight:900;margin-bottom:6px}
+.char-subtitle{font-size:15px;color:var(--text-muted);margin-bottom:28px}
+.form-group{margin-bottom:22px}
+.form-label{display:block;font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.form-input{width:100%;background:rgba(11,17,32,.6);border:2px solid var(--border);border-radius:14px;padding:16px 18px;color:var(--text);font-family:inherit;font-size:15.5px;transition:all .2s ease;-webkit-appearance:none;appearance:none}
+.form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.personality-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.personality-card{background:rgba(11,17,32,.6);border:2px solid var(--border);border-radius:16px;padding:20px 16px;cursor:pointer;transition:all .2s ease;text-align:center;touch-action:manipulation}
+.personality-card:hover{border-color:var(--primary);transform:translateY(-2px)}
+.personality-card.selected{border-color:var(--accent);background:rgba(245,158,11,.1);box-shadow:0 0 20px rgba(245,158,11,.1)}
+.personality-emoji{font-size:36px;margin-bottom:10px}
+.personality-name{font-size:14.5px;font-weight:800;margin-bottom:5px}
+.personality-desc{font-size:12px;color:var(--text-muted);line-height:1.4}
+.personality-bonus{font-size:11.5px;color:var(--success);margin-top:6px;font-weight:700}
+.tutorial-box{background:linear-gradient(135deg,rgba(59,130,246,.08),rgba(16,185,129,.06));border:1px solid rgba(59,130,246,.25);border-radius:18px;padding:24px;margin-bottom:20px}
+.tutorial-step{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start}
+.tutorial-step:last-child{margin-bottom:0}
+.tutorial-number{width:32px;height:32px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;box-shadow:0 4px 12px rgba(59,130,246,.3)}
+.tutorial-content{font-size:14.5px;line-height:1.7;color:var(--text-muted)}
+.tutorial-content strong{color:var(--text)}
+.calc-wrap{background:var(--surface);border-radius:18px;padding:24px;margin-bottom:16px;border:1px solid var(--border)}
+.calc-title{font-size:12px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.calc-text{font-size:15.5px;line-height:1.8;color:var(--text);margin-bottom:18px;white-space:pre-line}
+.calc-table{width:100%;border-collapse:collapse;margin-bottom:18px;font-size:14px}
+.calc-table th,.calc-table td{border:1px solid var(--border);padding:12px;text-align:center}
+.calc-table th{background:rgba(11,17,32,.6);font-weight:700;color:var(--accent-light)}
+.calc-options{display:flex;flex-direction:column;gap:10px}
+.calc-option{background:rgba(11,17,32,.6);border:2px solid var(--border);border-radius:14px;padding:16px 18px;cursor:pointer;transition:all .2s ease;font-size:14.5px;text-align:left;color:var(--text);font-family:inherit;touch-action:manipulation}
+.calc-option:hover{border-color:var(--primary)}
+.calc-option.selected{border-color:var(--primary);background:rgba(59,130,246,.1)}
+.calc-option.correct{border-color:var(--success);background:rgba(16,185,129,.1)}
+.calc-option.wrong{border-color:var(--danger);background:rgba(239,68,68,.1);animation:shake .4s ease}
+.calc-input{width:100%;background:rgba(11,17,32,.6);border:2px solid var(--border);border-radius:14px;padding:16px 18px;color:var(--text);font-family:inherit;font-size:15.5px;margin-bottom:14px;-webkit-appearance:none;appearance:none}
+.calc-input:focus{outline:none;border-color:var(--primary)}
+.feedback-box{border-radius:14px;padding:16px;margin-top:14px;font-size:14.5px;line-height:1.7}
+.feedback-box.correct{background:rgba(16,185,129,.1);border:1px solid var(--success);color:var(--success)}
+.feedback-box.wrong{background:rgba(239,68,68,.1);border:1px solid var(--danger);color:var(--danger)}
+.report-header{text-align:center;padding:28px 24px;background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:24px;margin-bottom:18px;box-shadow:var(--shadow-lg)}
+.report-emoji{font-size:56px;margin-bottom:10px}
+.report-title{font-size:26px;font-weight:900;color:#fff;margin-bottom:6px}
+.report-subtitle{font-size:15px;color:rgba(255,255,255,.75)}
+.report-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+.report-stat{background:var(--surface);border-radius:16px;padding:18px;text-align:center;border:1px solid var(--border)}
+.report-stat-icon{font-size:28px;margin-bottom:6px}
+.report-stat-value{font-size:22px;font-weight:900;color:var(--text)}
+.report-stat-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.report-section{background:var(--surface);border-radius:18px;padding:22px;margin-bottom:16px;border:1px solid var(--border)}
+.report-section-title{font-size:13px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.report-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.report-item:last-child{border-bottom:none}
+.report-item-label{font-size:14px;color:var(--text-muted)}
+.report-item-value{font-size:14px;font-weight:800;color:var(--text)}
+.achievement-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.achievement-card{background:rgba(11,17,32,.6);border-radius:14px;padding:16px;text-align:center;border:1px solid var(--border);opacity:.35;transition:all .3s ease}
+.achievement-card.unlocked{opacity:1;border-color:var(--accent);background:rgba(245,158,11,.06);box-shadow:0 0 20px rgba(245,158,11,.08)}
+.achievement-emoji{font-size:32px;margin-bottom:6px}
+.achievement-name{font-size:12.5px;font-weight:800;margin-bottom:3px}
+.achievement-desc{font-size:10.5px;color:var(--text-dim);line-height:1.4}
+.stars{font-size:32px;letter-spacing:6px;margin:10px 0}
+.tip-box{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.04));border:1px solid rgba(245,158,11,.3);border-radius:14px;padding:18px;margin:14px 0}
+.tip-title{font-size:13px;font-weight:800;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.tip-text{font-size:13.5px;line-height:1.7;color:var(--text-muted)}
+.delayed-banner{background:linear-gradient(90deg,var(--warning),var(--accent));color:#0f172a;padding:14px 18px;border-radius:14px;margin-bottom:16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:10px;animation:fadeIn .5s ease;box-shadow:0 4px 20px rgba(245,158,11,.2)}
+.checkpoint-banner{background:linear-gradient(90deg,var(--primary),#8b5cf6);color:#fff;padding:14px 18px;border-radius:14px;margin-bottom:16px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:10px;animation:fadeIn .5s ease;box-shadow:0 4px 20px rgba(59,130,246,.2)}
+.ending-scene{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;background:linear-gradient(180deg,var(--bg) 0%,#0f172a 50%,#1e1b4b 100%)}
+.ending-emoji{font-size:80px;margin-bottom:20px;animation:float 4s ease-in-out infinite}
+.ending-title{font-size:32px;font-weight:900;margin-bottom:12px;background:linear-gradient(135deg,#fff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ending-text{font-size:15.5px;color:var(--text-muted);line-height:1.85;max-width:400px;margin-bottom:28px}
+.ending-consequences{background:var(--surface);border-radius:18px;padding:20px;margin-bottom:24px;border:1px solid var(--border);width:100%;max-width:400px}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface-light);border-radius:3px}
+@media(max-width:400px){.stats-bar{gap:6px;padding:10px 12px}.stat-item{padding:8px 6px}.stat-value{font-size:12px}.start-title{font-size:28px}}
+.screen{display:none}.screen.active{display:flex;flex-direction:column}
+.language-toggle{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 20px;color:var(--text-muted);font-size:13px}
+.language-toggle button{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.language-toggle button.active{background:var(--accent);border-color:var(--accent);color:#0f172a}
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="app">
+
+<!-- START -->
+<div id="screen-start" class="screen active">
+  <div class="start-screen">
+    <div class="start-logo">⚖️</div>
+    <h1 class="start-title">CHOICE</h1>
+    <p class="start-subtitle">The Cost of Your Life<br>An Economics Adventure for HKDSE Students</p>
+    <div class="start-features">
+      <div class="start-feature"><span class="start-feature-icon">🎮</span><span>Make real decisions with real consequences</span></div>
+      <div class="start-feature"><span class="start-feature-icon">🧠</span><span>Learn Opportunity Cost through experience</span></div>
+      <div class="start-feature"><span class="start-feature-icon">📚</span><span>Practice HKDSE-style exam questions</span></div>
+      <div class="start-feature"><span class="start-feature-icon">⏱️</span><span>About 40–55 minutes per session</span></div>
+    </div>
+    <div class="language-toggle" aria-label="Language selector">
+      <span id="language-label">Language</span>
+      <button id="lang-en" class="active" onclick="G.setLanguage('en')">English</button>
+      <button id="lang-zh" onclick="G.setLanguage('zh-HK')">繁體中文</button>
+    </div>
+    <button class="start-btn" onclick="G.toCharacter()">▶ START YOUR JOURNEY</button>
+  </div>
+</div>
+
+<!-- CHARACTER -->
+<div id="screen-character" class="screen">
+  <div class="char-screen">
+    <h2 class="char-title">Create Your Character</h2>
+    <p class="char-subtitle">Who will you become this year?</p>
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input type="text" class="form-input" id="char-name" placeholder="Enter your name" maxlength="20" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Age</label>
+      <input type="number" class="form-input" id="char-age" value="16" min="14" max="20">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Choose Your Personality</label>
+      <div class="personality-grid">
+        <div class="personality-card" data-p="ambitious" onclick="G.selectPersonality('ambitious')">
+          <div class="personality-emoji">🎯</div><div class="personality-name">Ambitious</div>
+          <div class="personality-desc">Driven to succeed at all costs</div><div class="personality-bonus">📚 +5 | 😊 -2</div>
+        </div>
+        <div class="personality-card" data-p="social" onclick="G.selectPersonality('social')">
+          <div class="personality-emoji">🎉</div><div class="personality-name">Social</div>
+          <div class="personality-desc">Life is about connections</div><div class="personality-bonus">❤️ +5 | 📚 -2</div>
+        </div>
+        <div class="personality-card" data-p="entrepreneurial" onclick="G.selectPersonality('entrepreneurial')">
+          <div class="personality-emoji">🚀</div><div class="personality-name">Entrepreneurial</div>
+          <div class="personality-desc">Always spotting opportunities</div><div class="personality-bonus">💰 +$50 | Risk ↑</div>
+        </div>
+        <div class="personality-card" data-p="balanced" onclick="G.selectPersonality('balanced')">
+          <div class="personality-emoji">⚖️</div><div class="personality-name">Balanced</div>
+          <div class="personality-desc">Jack of all trades</div><div class="personality-bonus">All stats +2</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="G.startGame()">Begin Your Story →</button>
+  </div>
+</div>
+
+<!-- TUTORIAL -->
+<div id="screen-tutorial" class="screen">
+  <div class="header"><div class="header-title">Welcome, Economist</div><div class="header-subtitle">Year 1 • Tutorial</div></div>
+  <div class="main">
+    <div class="tutorial-box fade-in">
+      <div class="tutorial-step"><div class="tutorial-number">1</div><div class="tutorial-content"><strong>Resources are limited.</strong> You have Money, Time, Knowledge, Happiness, Relationships, and Reputation. You cannot maximise everything.</div></div>
+      <div class="tutorial-step"><div class="tutorial-number">2</div><div class="tutorial-content"><strong>Every choice has a cost.</strong> When you choose one thing, you give up others. The <strong>best alternative forgone</strong> is your opportunity cost.</div></div>
+      <div class="tutorial-step"><div class="tutorial-number">3</div><div class="tutorial-content"><strong>Decisions have delayed consequences.</strong> Choices you make now may affect you events later. Think ahead!</div></div>
+      <div class="tutorial-step"><div class="tutorial-number">4</div><div class="tutorial-content"><strong>There is no "right" answer.</strong> Economics is about understanding trade-offs, not finding perfect solutions.</div></div>
+    </div>
+    <button class="btn-primary" onclick="G.toEvents()">Understood — Let's Begin →</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="screen-game" class="screen">
+  <div class="header"><div class="header-title">CHOICE</div><div class="header-subtitle" id="game-subtitle">Year 1 • Event 1 of 15</div></div>
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-item" id="st-money"><div class="stat-icon">💰</div><div class="stat-value" id="v-money">$500</div><div class="stat-label">Money</div></div>
+    <div class="stat-item" id="st-time"><div class="stat-icon">⏰</div><div class="stat-value" id="v-time">100</div><div class="stat-label">Time</div></div>
+    <div class="stat-item" id="st-knowledge"><div class="stat-icon">📚</div><div class="stat-value" id="v-knowledge">50</div><div class="stat-label">Knowledge</div></div>
+    <div class="stat-item" id="st-happiness"><div class="stat-icon">😊</div><div class="stat-value" id="v-happiness">50</div><div class="stat-label">Happiness</div></div>
+    <div class="stat-item" id="st-relations"><div class="stat-icon">❤️</div><div class="stat-value" id="v-relations">50</div><div class="stat-label">Relations</div></div>
+    <div class="stat-item" id="st-reputation"><div class="stat-icon">⭐</div><div class="stat-value" id="v-reputation">50</div><div class="stat-label">Reputation</div></div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-text" id="progress-text">Life Events: 0 / 15</div>
+  </div>
+  <div class="main" id="game-main"></div>
+</div>
+
+<!-- CALCULATION -->
+<div id="screen-calculation" class="screen">
+  <div class="header"><div class="header-title">Economics Lab</div><div class="header-subtitle">Calculation Challenge</div></div>
+  <div class="main" id="calc-main"></div>
+</div>
+
+<!-- HKDSE -->
+<div id="screen-hkdse" class="screen">
+  <div class="header"><div class="header-title">HKDSE Challenge</div><div class="header-subtitle">Test Your Understanding</div></div>
+  <div class="main" id="hkdse-main"></div>
+</div>
+
+<!-- MID-YEAR REPORT -->
+<div id="screen-midreport" class="screen">
+  <div class="main" id="midreport-main"></div>
+</div>
+
+<!-- ENDING SCENE -->
+<div id="screen-ending" class="screen">
+  <div class="main" id="ending-main" style="padding:0;"></div>
+</div>
+
+<!-- FINAL REPORT -->
+<div id="screen-report" class="screen">
+  <div class="main" id="report-main"></div>
+</div>
+
+</div>
+
+<script>
+// ==================== GAME DATA ====================
+const EVENTS = [
+  {
+    id: "saturday", title: "Saturday Afternoon", badge: "Life Event",
+    desc: "It's Saturday afternoon. You have 5 hours of free time before dinner. Your friends are going to the football pitch, your Economics notes are waiting, and the local cafe has a part-time shift available.",
+    context: "💡 Key Concept: Scarcity — your time is limited, so you must choose.",
+    choices: [
+      { id: "study", text: "📚 Study Economics at the library", icon: "📚", effects: { time: -5, knowledge: 12, happiness: -3 },
+        delayed: [
+          { trigger: 5, effects: { knowledge: 6 }, text: "Your consistent Saturday studying built strong foundations!" },
+          { trigger: 9, effects: { knowledge: 4, reputation: 3 }, text: "Your study habits earned you a tutor position." }
+        ],
+        opportunityCost: "Playing football with friends (Happiness +10, Relationships +8) or $375 income", bestAlt: "work" },
+      { id: "football", text: "⚽ Join friends for football", icon: "⚽", effects: { time: -5, happiness: 10, relationships: 8, knowledge: -2 },
+        delayed: [
+          { trigger: 5, effects: { happiness: 4 }, text: "That football match built lasting friendships." },
+          { trigger: 9, effects: { relationships: 5 }, text: "Your teammates invited you to join a league!" }
+        ],
+        opportunityCost: "Working part-time ($375 income)", bestAlt: "work" },
+      { id: "work", text: "💰 Work part-time at the cafe ($75/hr × 5)", icon: "💰", effects: { time: -5, money: 375, happiness: -2 },
+        delayed: [
+          { trigger: 5, effects: { money: 200 }, text: "The cafe owner offered you a regular weekend shift." },
+          { trigger: 9, effects: { knowledge: -4, money: 300 }, text: "You earned steady income but fell behind on notes." }
+        ],
+        opportunityCost: "Studying Economics (Knowledge +12)", bestAlt: "study" },
+      { id: "games", text: "🎮 Play video games at home", icon: "🎮", effects: { time: -5, happiness: 6, knowledge: -3, relationships: -2 },
+        delayed: [],
+        opportunityCost: "Working part-time ($375 income)", bestAlt: "work" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "parttime", title: "The Part-Time Offer", badge: "Life Event",
+    desc: "A new restaurant opened near your school. They're hiring students for HK$75 per hour, 4 hours every Saturday. The money would help with daily expenses, but it means giving up your weekends.",
+    context: "💡 Key Concept: Opportunity Cost of Time — what else could you do with those hours?",
+    choices: [
+      { id: "accept", text: "✅ Accept the job (4 hrs/week, $300)", icon: "✅", effects: { money: 300, time: -4, happiness: -3, knowledge: -2 },
+        delayed: [
+          { trigger: 4, effects: { money: 300 }, text: "Weekly paycheque arrived!" },
+          { trigger: 7, effects: { money: 300 }, text: "Another week, another paycheque." },
+          { trigger: 11, effects: { knowledge: -5, money: 400 }, text: "You earned well all term, but exams are approaching." }
+        ],
+        opportunityCost: "Study time and social life every weekend", bestAlt: "decline" },
+      { id: "decline", text: "❌ Decline — focus on studies and rest", icon: "❌", effects: { knowledge: 5, happiness: 2, time: 2 },
+        delayed: [
+          { trigger: 4, effects: { knowledge: 4 }, text: "Extra study time is showing results!" },
+          { trigger: 7, effects: { knowledge: 3, happiness: 2 }, text: "Well-rested and prepared for mid-terms." }
+        ],
+        opportunityCost: "HK$300 weekly income ($1,200+ per month)", bestAlt: "accept" },
+      { id: "negotiate", text: "🤝 Negotiate 2 hours only ($150)", icon: "🤝", effects: { money: 150, time: -2, knowledge: -1 },
+        delayed: [
+          { trigger: 4, effects: { money: 150 }, text: "Part-time pay received." },
+          { trigger: 7, effects: { money: 150, knowledge: 2 }, text: "Balanced approach is working." }
+        ],
+        opportunityCost: "Full HK$300 weekly income", bestAlt: "accept" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "concert", title: "The Concert Dilemma", badge: "Life Event",
+    desc: "Three months ago, you bought a HK$500 concert ticket for tonight. But just now, your best friend invited you to a once-in-a-lifetime meet-and-greet with a famous economist visiting Hong Kong. You can only do one.",
+    context: "💡 Key Concept: Sunk Cost — the HK$500 is gone regardless. Don't let it cloud your decision.",
+    choices: [
+      { id: "concert", text: "🎵 Go to the concert (already paid $500)", icon: "🎵", effects: { happiness: 8 },
+        delayed: [],
+        opportunityCost: "Meeting the economist (Knowledge +15, Networking)", bestAlt: "economist", misconception: "sunk_cost" },
+      { id: "economist", text: "🎓 Meet the famous economist", icon: "🎓", effects: { knowledge: 15, happiness: 5, reputation: 10 },
+        delayed: [
+          { trigger: 6, effects: { reputation: 5 }, text: "That economist connection opened doors!" },
+          { trigger: 10, effects: { knowledge: 5, reputation: 5 }, text: "You were quoted in the school paper about the talk." }
+        ],
+        opportunityCost: "The concert experience (Happiness +8)", bestAlt: "concert" },
+      { id: "sell", text: "💸 Sell ticket for $400, go to meet-up", icon: "💸", effects: { money: 400, knowledge: 12, happiness: 4 },
+        delayed: [],
+        opportunityCost: "The full concert experience", bestAlt: "concert" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "bonus", title: "HK$1,000 Bonus", badge: "Life Event",
+    desc: "Your uncle gave you HK$1,000 as a reward for your recent exam results. You need to decide what to do with this windfall. Every option has a different return — and a different cost.",
+    context: "💡 Key Concept: Consumption vs Saving — what is the opportunity cost of spending now?",
+    choices: [
+      { id: "spend", text: "🛍️ Buy new sneakers and a game", icon: "🛍️", effects: { money: -1000, happiness: 15 },
+        delayed: [],
+        opportunityCost: "Potential investment returns and compound growth", bestAlt: "invest" },
+      { id: "save", text: "🏦 Save in bank (2% annual interest)", icon: "🏦", effects: { money: 1000, happiness: 2 },
+        delayed: [
+          { trigger: 7, effects: { money: 20 }, text: "Bank interest earned: HK$20" },
+          { trigger: 12, effects: { money: 40 }, text: "Your savings grew steadily over the year." }
+        ],
+        opportunityCost: "Immediate enjoyment and experience", bestAlt: "spend" },
+      { id: "invest", text: "📈 Invest in stock simulation ($1,000)", icon: "📈", effects: { money: -1000, happiness: 3, knowledge: 5 },
+        delayed: [
+          { trigger: 7, effects: { money: 150 }, text: "Your investment grew by 15%!" },
+          { trigger: 12, effects: { money: 300, knowledge: 3 }, text: "Compound returns are building your portfolio." }
+        ],
+        opportunityCost: "Certain bank interest and liquidity", bestAlt: "save", risk: true },
+      { id: "family", text: "👨‍👩‍👧 Help family with groceries", icon: "👨‍👩‍👧", effects: { money: -1000, relationships: 12, happiness: 8, reputation: 5 },
+        delayed: [
+          { trigger: 7, effects: { relationships: 5 }, text: "Your family really appreciated your help." },
+          { trigger: 12, effects: { relationships: 5, happiness: 3 }, text: "Family support during tough times was invaluable." }
+        ],
+        opportunityCost: "Personal consumption or investment growth", bestAlt: "invest" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "exam", title: "The Economics Exam", badge: "Life Event",
+    desc: "Your HKDSE Economics mock exam is in 3 days. You feel underprepared. You have 6 hours each day to allocate. How will you spend the final 72 hours before the exam?",
+    context: "💡 Key Concept: Marginal Decision-Making — each additional hour has a different return.",
+    choices: [
+      { id: "intense", text: "📚 Intense study (6 hrs/day, no breaks)", icon: "📚", effects: { time: -18, knowledge: 20, happiness: -8, relationships: -3 },
+        delayed: [
+          { trigger: 8, effects: { knowledge: 10, reputation: 5 }, text: "Excellent exam results! Teachers are impressed." },
+          { trigger: 13, effects: { reputation: 5 }, text: "Your top score earned you a scholarship recommendation." }
+        ],
+        opportunityCost: "Rest, health, and social life", bestAlt: "balanced" },
+      { id: "balanced", text: "⚖️ Balanced: 4 hrs study, 2 hrs rest/day", icon: "⚖️", effects: { time: -12, knowledge: 12, happiness: 2 },
+        delayed: [
+          { trigger: 8, effects: { knowledge: 6, happiness: 3 }, text: "Solid exam performance with good wellbeing." }
+        ],
+        opportunityCost: "Maximum possible study time and top grade potential", bestAlt: "intense" },
+      { id: "work", text: "💰 Work 4 hrs, study 2 hrs/day", icon: "💰", effects: { time: -18, money: 900, knowledge: 6, happiness: -3 },
+        delayed: [
+          { trigger: 8, effects: { knowledge: -5 }, text: "You passed, but your score was lower than hoped." },
+          { trigger: 13, effects: { knowledge: -3 }, text: "The knowledge gap from that week still shows." }
+        ],
+        opportunityCost: "Higher exam scores and academic reputation", bestAlt: "intense" },
+      { id: "relax", text: "😌 Mostly relax, light revision", icon: "😌", effects: { time: -6, happiness: 10, knowledge: 3 },
+        delayed: [
+          { trigger: 8, effects: { knowledge: -8, reputation: -3 }, text: "Your exam results were disappointing." },
+          { trigger: 13, effects: { reputation: -5 }, text: "Teachers are concerned about your academic commitment." }
+        ],
+        opportunityCost: "Better academic performance and future opportunities", bestAlt: "intense" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "foodtruck", title: "The Food Truck Weekend", badge: "Life Event",
+    desc: "You inherit a small food truck for one weekend! You have limited ingredients: enough flour for 30 pizzas OR enough buns for 60 burgers (you can't make both with the same ingredients). Each pizza sells for HK$80, each burger for HK$40.",
+    context: "💡 Key Concept: Production Possibility Curve — limited resources force choices between alternatives.",
+    choices: [
+      { id: "pizza", text: "🍕 Make 30 pizzas only ($80 each = $2,400)", icon: "🍕", effects: { money: 2400, knowledge: 5, happiness: 4 },
+        delayed: [],
+        opportunityCost: "60 burgers (also $2,400 revenue, but different customer base)", bestAlt: "burger" },
+      { id: "burger", text: "🍔 Make 60 burgers only ($40 each = $2,400)", icon: "🍔", effects: { money: 2400, knowledge: 5, happiness: 4 },
+        delayed: [],
+        opportunityCost: "30 pizzas (also $2,400 revenue, but higher margin per item)", bestAlt: "pizza" },
+      { id: "mix", text: "⚖️ Mix: 15 pizzas + 30 burgers ($2,400)", icon: "⚖️", effects: { money: 2400, knowledge: 8, happiness: 6 },
+        delayed: [],
+        opportunityCost: "Specialising in one product (simpler operations, faster service)", bestAlt: "pizza" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "summer", title: "Summer Break Plans", badge: "Life Event",
+    desc: "School's out for 8 weeks! You have three very different ways to spend your summer. Each path will shape who you become next year.",
+    context: "💡 Key Concept: Human Capital — investing in yourself today pays dividends tomorrow.",
+    choices: [
+      { id: "intern", text: "🏢 Summer internship (unpaid, 40 hrs/week)", icon: "🏢", effects: { time: -40, money: -500, knowledge: 15, reputation: 12, happiness: -2 },
+        delayed: [
+          { trigger: 9, effects: { reputation: 8, knowledge: 5 }, text: "Your internship experience impressed university admissions." },
+          { trigger: 14, effects: { reputation: 5, money: 2000 }, text: "The company offered you a paid return position!" }
+        ],
+        opportunityCost: "Summer income and leisure time", bestAlt: "job" },
+      { id: "job", text: "💰 Full-time summer job ($50/hr, 40 hrs/week)", icon: "💰", effects: { time: -40, money: 8000, happiness: 3, knowledge: 2 },
+        delayed: [
+          { trigger: 9, effects: { money: 1000 }, text: "Your summer savings gave you a financial cushion." },
+          { trigger: 14, effects: { money: 500 }, text: "You still have savings from that productive summer." }
+        ],
+        opportunityCost: "Career experience and skill development", bestAlt: "intern" },
+      { id: "travel", text: "✈️ Budget travel with friends ($5,000)", icon: "✈️", effects: { time: -20, money: -5000, happiness: 18, relationships: 15, knowledge: 5 },
+        delayed: [
+          { trigger: 9, effects: { happiness: 5, relationships: 5 }, text: "Those travel memories keep you motivated through tough times." },
+          { trigger: 14, effects: { relationships: 3 }, text: "Your travel friends are still your closest mates." }
+        ],
+        opportunityCost: "Career experience and income", bestAlt: "intern" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "university", title: "The Big Decision", badge: "Major Life Event",
+    desc: "HKDSE results are out. Your future branches in four very different directions. Each path shapes not just your career, but your entire identity. There is no perfect answer — only trade-offs you must own.",
+    context: "💡 Key Concept: Human Capital & Investment — education is an investment in your future earning potential.",
+    choices: [
+      { id: "university", text: "🎓 Enter university (4 years, $42,000/year tuition)", icon: "🎓", effects: { money: -42000, knowledge: 25, happiness: 5, reputation: 10 },
+        delayed: [
+          { trigger: 10, effects: { knowledge: 10, reputation: 5 }, text: "First year complete. Your analytical skills are sharpening." },
+          { trigger: 14, effects: { money: 50000, reputation: 10 }, text: "Graduated! Your degree opened doors to a $50k starting salary." }
+        ],
+        opportunityCost: "4 years of full-time income (~$600,000) and work experience", bestAlt: "work" },
+      { id: "work", text: "💼 Start working immediately (retail, $15k/month)", icon: "💼", effects: { money: 15000, knowledge: 5, happiness: 3 },
+        delayed: [
+          { trigger: 10, effects: { money: 20000 }, text: "Promoted to supervisor after a year!" },
+          { trigger: 14, effects: { money: 25000 }, text: "Steady promotions, but you hit a ceiling without a degree." }
+        ],
+        opportunityCost: "University education, higher future earnings, and professional network", bestAlt: "university" },
+      { id: "business", text: "🚀 Start a small business ($20,000 capital)", icon: "🚀", effects: { money: -20000, knowledge: 10, happiness: 8, reputation: 5 },
+        delayed: [
+          { trigger: 10, effects: { money: 10000, reputation: 5 }, text: "Your business survived year one!" },
+          { trigger: 14, effects: { money: 80000, reputation: 15 }, text: "Your business took off! You're now hiring staff." }
+        ],
+        opportunityCost: "Stable university path and guaranteed credential", bestAlt: "university", risk: true },
+      { id: "vocational", text: "🔧 Vocational training (2 years, $10,000)", icon: "🔧", effects: { money: -10000, knowledge: 15, happiness: 4 },
+        delayed: [
+          { trigger: 10, effects: { money: 15000 }, text: "Certified and ready to work — skills are in demand." },
+          { trigger: 14, effects: { money: 35000 }, text: "Your trade skills command premium rates." }
+        ],
+        opportunityCost: "University degree potential and broader career options", bestAlt: "university" }
+    ],
+    revealAfter: true
+  },
+
+  {
+    id: "firstyear", title: "First Year Reality", badge: "Life Event",
+    desc: "Your first year after the big decision is complete. Now you face the real-world consequences of your choice. The path you chose is shaping your daily life in ways you didn't expect.",
+    context: "💡 Key Concept: Path Dependency — early choices constrain later options.",
+    choices: [
+      { id: "double", text: "📚 Double down on your chosen path", icon: "📚", effects: { knowledge: 8, happiness: -3, time: -10 },
+        delayed: [
+          { trigger: 12, effects: { knowledge: 10, reputation: 5 }, text: "Your dedication is paying off — you're becoming an expert." }
+        ],
+        opportunityCost: "Exploring alternative interests and maintaining work-life balance", bestAlt: "explore" },
+      { id: "explore", text: "🌐 Explore side interests and hobbies", icon: "🌐", effects: { happiness: 8, knowledge: 3, time: -8 },
+        delayed: [
+          { trigger: 12, effects: { happiness: 5, knowledge: 2 }, text: "Your broad interests make you a creative problem-solver." }
+        ],
+        opportunityCost: "Deep specialisation and faster career progression", bestAlt: "double" },
+      { id: "network", text: "🤝 Focus on building connections", icon: "🤝", effects: { relationships: 12, reputation: 8, time: -8, money: -300 },
+        delayed: [
+          { trigger: 12, effects: { relationships: 5, reputation: 5 }, text: "Your network introduced you to a mentor." }
+        ],
+        opportunityCost: "Skill development and personal study time", bestAlt: "double" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "investment", title: "The Investment Opportunity", badge: "Life Event",
+    desc: "A friend approaches you with a \"can't-miss\" investment: a new app startup seeking seed funding. They need HK$15,000 and promise 3× returns within 2 years. Your savings are exactly HK$15,000.",
+    context: "💡 Key Concept: Risk & Return — higher promised returns usually mean higher risk.",
+    choices: [
+      { id: "allin", text: "💰 Invest all $15,000 in the startup", icon: "💰", effects: { money: -15000, happiness: 5, reputation: 3 },
+        delayed: [
+          { trigger: 15, effects: { money: 30000, reputation: 10 }, text: "EXIT! Your startup was acquired for millions!" }
+        ],
+        opportunityCost: "Financial security and liquidity", bestAlt: "safe", risk: true },
+      { id: "half", text: "⚖️ Invest $7,500, keep $7,500 safe", icon: "⚖️", effects: { money: -7500, happiness: 3, knowledge: 3 },
+        delayed: [
+          { trigger: 15, effects: { money: 15000 }, text: "The startup succeeded — your half-investment doubled!" }
+        ],
+        opportunityCost: "Maximum potential returns from full investment", bestAlt: "allin", risk: true },
+      { id: "safe", text: "🏦 Keep all money in savings", icon: "🏦", effects: { money: 200, happiness: -2, knowledge: 2 },
+        delayed: [
+          { trigger: 15, effects: { money: 400 }, text: "Safe and steady — your savings grew with interest." }
+        ],
+        opportunityCost: "Potential high returns from the startup", bestAlt: "allin" },
+      { id: "research", text: "🔍 Spend $500 on research, decide later", icon: "🔍", effects: { money: -500, knowledge: 5, happiness: 2 },
+        delayed: [
+          { trigger: 15, effects: { knowledge: 3 }, text: "Your research revealed the startup's flaws — you avoided a loss!" }
+        ],
+        opportunityCost: "Early investor advantages and potential returns", bestAlt: "allin" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "housing", title: "The Housing Decision", badge: "Life Event",
+    desc: "You need to move out of your family home. Rent in the city centre is HK$8,000/month for a small flat. A flat 45 minutes away by MTR is HK$4,500/month. Living at home is free but limits your independence.",
+    context: "💡 Key Concept: Opportunity Cost of Money AND Time — cheaper rent may cost you hours of commuting.",
+    choices: [
+      { id: "city", text: "🏙️ City centre flat ($8,000/mo, 10 min commute)", icon: "🏙️", effects: { money: -8000, time: 10, happiness: 8, knowledge: 3 },
+        delayed: [
+          { trigger: 14, effects: { happiness: 3, knowledge: 2 }, text: "Living downtown gave you access to evening seminars." }
+        ],
+        opportunityCost: "HK$3,500/month savings and family support", bestAlt: "home" },
+      { id: "suburb", text: "🏠 Suburban flat ($4,500/mo, 45 min commute)", icon: "🏠", effects: { money: -4500, time: -8, happiness: 2 },
+        delayed: [
+          { trigger: 14, effects: { time: -5 }, text: "The daily commute is draining your energy." }
+        ],
+        opportunityCost: "City convenience and networking opportunities", bestAlt: "city" },
+      { id: "home", text: "🏡 Stay at home (free, but strict rules)", icon: "🏡", effects: { money: 500, happiness: -5, relationships: 3, time: 5 },
+        delayed: [
+          { trigger: 14, effects: { money: 1000 }, text: "Your savings grew from zero rent payments." }
+        ],
+        opportunityCost: "Independence, privacy, and life experience", bestAlt: "city" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "career", title: "Career Crossroads", badge: "Major Life Event",
+    desc: "Two years have passed. Your industry is changing rapidly. AI is disrupting traditional roles. You must adapt or risk becoming obsolete. What is your next move?",
+    context: "💡 Key Concept: Creative Destruction — new technology destroys old jobs but creates new opportunities.",
+    choices: [
+      { id: "reskill", text: "📚 Reskill in AI and data analytics ($10,000 course)", icon: "📚", effects: { money: -10000, knowledge: 20, happiness: -3, time: -15 },
+        delayed: [
+          { trigger: 15, effects: { knowledge: 10, reputation: 8, money: 5000 }, text: "Your new skills made you indispensable — raise approved!" }
+        ],
+        opportunityCost: "Immediate income and current comfort zone", bestAlt: "pivot" },
+      { id: "pivot", text: "🔄 Pivot to a completely different industry", icon: "🔄", effects: { money: -3000, knowledge: 10, happiness: 5, time: -10 },
+        delayed: [
+          { trigger: 15, effects: { happiness: 8, knowledge: 5 }, text: "Your fresh perspective is valued in the new field." }
+        ],
+        opportunityCost: "Established reputation and seniority in current field", bestAlt: "reskill" },
+      { id: "specialise", text: "🎯 Double down on your niche expertise", icon: "🎯", effects: { knowledge: 12, reputation: 5, time: -8 },
+        delayed: [
+          { trigger: 15, effects: { reputation: 5, money: 2000 }, text: "Your deep expertise commands premium consulting rates." }
+        ],
+        opportunityCost: "Broader skill set and adaptability", bestAlt: "reskill" },
+      { id: "status", text: "😌 Keep doing what you're doing", icon: "😌", effects: { happiness: 5, knowledge: -2, time: 5 },
+        delayed: [
+          { trigger: 15, effects: { knowledge: -5, money: -2000 }, text: "The industry moved on without you — demotion looming." }
+        ],
+        opportunityCost: "Career growth and future-proofing", bestAlt: "reskill" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "startup", title: "The Startup Offer", badge: "Life Event",
+    desc: "A former classmate wants you to co-found a tech startup. They have the idea and prototype. You would handle the business side. It requires quitting your current stable job. The startup has a 20% chance of success.",
+    context: "💡 Key Concept: Expected Value — weigh probability of success against potential payoff.",
+    choices: [
+      { id: "cofound", text: "🚀 Co-found the startup (quit stable job)", icon: "🚀", effects: { money: -10000, happiness: 10, knowledge: 8, reputation: 5 },
+        delayed: [
+          { trigger: 15, effects: { money: 150000, reputation: 20 }, text: "EXIT! Your startup was acquired for millions!" }
+        ],
+        opportunityCost: "Stable salary, benefits, and predictable career", bestAlt: "advise", risk: true },
+      { id: "advise", text: "💡 Advise part-time (keep day job)", icon: "💡", effects: { time: -10, knowledge: 5, money: -1000, happiness: 3 },
+        delayed: [
+          { trigger: 15, effects: { money: 10000, reputation: 5 }, text: "Your advice was crucial — they gave you equity as thanks." }
+        ],
+        opportunityCost: "Full ownership and control of the company", bestAlt: "cofound" },
+      { id: "pass", text: "🚫 Politely decline", icon: "🚫", effects: { happiness: -2, knowledge: 1, reputation: -2 },
+        delayed: [
+          { trigger: 15, effects: { happiness: -3 }, text: "You watched from the sidelines as the startup grew..." }
+        ],
+        opportunityCost: "Potential life-changing wealth and experience", bestAlt: "cofound" }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "crisis", title: "Economic Crisis Hits", badge: "Crisis Event",
+    desc: "A global recession has struck Hong Kong. Your employer announces a 15% pay cut for all staff. Inflation is rising. Your investments are down 30%. How do you respond?",
+    context: "💡 Key Concept: Economic Resilience — diversification and savings buffer you against shocks.",
+    choices: [
+      { id: "cut", text: "✂️ Cut all non-essential spending", icon: "✂️", effects: { money: 2000, happiness: -8, knowledge: 3 },
+        delayed: [
+          { trigger: 15, effects: { money: 3000, happiness: 2 }, text: "Your frugality built an emergency fund." }
+        ],
+        opportunityCost: "Quality of life and mental health", bestAlt: "side" },
+      { id: "side", text: "💰 Start a side hustle to replace lost income", icon: "💰", effects: { time: -15, money: 3000, happiness: -3, knowledge: 5 },
+        delayed: [
+          { trigger: 15, effects: { money: 5000, happiness: 5 }, text: "Your side hustle became your main income source!" }
+        ],
+        opportunityCost: "Rest, relationships, and leisure time", bestAlt: "cut" },
+      { id: "borrow", text: "💳 Use credit to maintain lifestyle", icon: "💳", effects: { money: 3000, happiness: 5, knowledge: -2 },
+        delayed: [
+          { trigger: 15, effects: { money: -5000, happiness: -10 }, text: "Debt piled up faster than you expected." }
+        ],
+        opportunityCost: "Financial freedom and lower stress", bestAlt: "cut" },
+      { id: "invest", text: "📉 Buy more investments while prices are low", icon: "📉", effects: { money: -5000, happiness: -2, knowledge: 5 },
+        delayed: [
+          { trigger: 15, effects: { money: 15000 }, text: "Markets recovered — you bought at the bottom!" }
+        ],
+        opportunityCost: "Financial security and liquidity", bestAlt: "cut", risk: true }
+    ],
+    revealAfter: true
+  },
+  {
+    id: "mayor", title: "You Become a Leader", badge: "Final Event",
+    desc: "You have been elected to lead a community improvement initiative with a HK$100 million budget. Healthcare, education, transport, and housing all need funding. Every choice creates winners and losers. Welcome to public economics.",
+    context: "💡 Key Concept: Public Choice — governments face scarcity and must allocate resources where marginal benefit equals marginal cost.",
+    choices: [
+      { id: "health", text: "🏥 Build a new public hospital ($100m)", icon: "🏥", effects: { reputation: 15, happiness: 10, relationships: 5, knowledge: 3 },
+        delayed: [],
+        opportunityCost: "Education, transport, and housing improvements for thousands", bestAlt: "education" },
+      { id: "education", text: "🏫 Build 5 new schools ($100m)", icon: "🏫", effects: { knowledge: 15, reputation: 12, happiness: 8, relationships: 3 },
+        delayed: [],
+        opportunityCost: "Immediate healthcare and emergency services", bestAlt: "health" },
+      { id: "transport", text: "🚇 Extend MTR line to underserved area ($100m)", icon: "🚇", effects: { happiness: 12, reputation: 10, money: 2000, relationships: 5 },
+        delayed: [],
+        opportunityCost: "Direct welfare services and education", bestAlt: "health" },
+      { id: "split", text: "⚖️ Split: $30m health + $30m education + $25m transport + $15m housing", icon: "⚖️", effects: { knowledge: 5, happiness: 8, relationships: 5, reputation: 5 },
+        delayed: [],
+        opportunityCost: "Transformative impact in any single area", bestAlt: "health" }
+    ],
+    revealAfter: true
+  }
+];
+
+const CALCULATIONS = [
+  {
+    id: "calc1", title: "Calculation 1: Basic Opportunity Cost",
+    question: "A student can use 4 hours to either:\n• Bake 20 cupcakes, OR\n• Make 40 sandwiches\n\nWhat is the opportunity cost of producing ONE cupcake?",
+    type: "mcq",
+    options: [
+      { text: "A. 1 sandwich", correct: false },
+      { text: "B. 2 sandwiches", correct: true },
+      { text: "C. 40 sandwiches", correct: false },
+      { text: "D. 20 sandwiches", correct: false }
+    ],
+    explanation: "If 20 cupcakes = 40 sandwiches, then 1 cupcake = 40 ÷ 20 = 2 sandwiches. The opportunity cost of one cupcake is 2 sandwiches.",
+    hint: "Divide the number of sandwiches by the number of cupcakes."
+  },
+  {
+    id: "calc2", title: "Calculation 2: Production Possibility Curve",
+    question: "An economy can produce the following combinations of Food and Clothing:",
+    table: {
+      headers: ["Combination", "Food (units)", "Clothing (units)"],
+      rows: [["A","0","100"],["B","20","90"],["C","40","70"],["D","60","40"],["E","80","0"]]
+    },
+    subquestions: [
+      {
+        q: "What is the opportunity cost of moving from Combination B to C?",
+        options: [
+          { text: "A. 10 units of clothing", correct: false },
+          { text: "B. 20 units of food", correct: false },
+          { text: "C. 20 units of clothing", correct: true },
+          { text: "D. 40 units of food", correct: false }
+        ],
+        explanation: "From B to C: Food increases by 20 (20→40), Clothing falls by 20 (90→70). Opportunity cost = 20 clothing."
+      },
+      {
+        q: "Which statement is TRUE about Combination D?",
+        options: [
+          { text: "A. It is inefficient production", correct: false },
+          { text: "B. It is unattainable with current resources", correct: false },
+          { text: "C. It shows efficient use of resources", correct: true },
+          { text: "D. The opportunity cost of food is zero", correct: false }
+        ],
+        explanation: "Points ON the PPC (like D) represent efficient production — all resources are fully utilised."
+      }
+    ]
+  },
+  {
+    id: "calc3", title: "Calculation 3: Comparative Advantage",
+    question: "Two students can produce essays and diagrams in one hour:",
+    table: {
+      headers: ["Student", "Essays", "Diagrams"],
+      rows: [["Alex","4","2"],["Betty","3","6"]]
+    },
+    subquestions: [
+      {
+        q: "What is Alex's opportunity cost of producing one essay?",
+        options: [
+          { text: "A. 0.5 diagrams", correct: true },
+          { text: "B. 2 diagrams", correct: false },
+          { text: "C. 4 diagrams", correct: false },
+          { text: "D. 1 diagram", correct: false }
+        ],
+        explanation: "Alex can make 4 essays OR 2 diagrams. So 1 essay = 2÷4 = 0.5 diagrams."
+      },
+      {
+        q: "Who has the comparative advantage in producing diagrams?",
+        options: [
+          { text: "A. Alex", correct: false },
+          { text: "B. Betty", correct: true },
+          { text: "C. Neither", correct: false },
+          { text: "D. Cannot be determined", correct: false }
+        ],
+        explanation: "Betty's opportunity cost of 1 diagram = 3÷6 = 0.5 essays. Alex's = 4÷2 = 2 essays. Betty has lower opportunity cost."
+      }
+    ]
+  },
+  {
+    id: "calc4", title: "Calculation 4: Expected Value",
+    question: "A startup investment has the following outcomes:\n• 30% chance of returning $50,000\n• 50% chance of returning $10,000\n• 20% chance of losing everything ($0)\n\nWhat is the EXPECTED VALUE of this investment?",
+    type: "mcq",
+    options: [
+      { text: "A. $20,000", correct: true },
+      { text: "B. $60,000", correct: false },
+      { text: "C. $10,000", correct: false },
+      { text: "D. $30,000", correct: false }
+    ],
+    explanation: "Expected Value = (0.30 × $50,000) + (0.50 × $10,000) + (0.20 × $0) = $15,000 + $5,000 + $0 = $20,000.",
+    hint: "Multiply each outcome by its probability, then sum."
+  }
+];
+
+const HKDSE_QUESTIONS = [
+  {
+    id: "hkdse1",
+    question: "A student has four hours available on Saturday. He can either work for HK$320 or study for an Economics examination. He chooses to study.\n\nWhich of the following best represents the opportunity cost of his decision?",
+    options: [
+      { text: "A. HK$0", correct: false },
+      { text: "B. HK$320", correct: true },
+      { text: "C. The cost of his textbook", correct: false },
+      { text: "D. His total study time", correct: false }
+    ],
+    explanation: "Opportunity cost is the value of the BEST alternative forgone. By studying, he gives up HK$320 of earnings.",
+    topic: "opportunity_cost"
+  },
+  {
+    id: "hkdse2",
+    question: "Amy bought a HK$600 ticket for a music festival. On the day of the festival, she is invited to a free career talk that could help her university application. She decides to attend the talk instead.\n\nWhich statement is CORRECT?",
+    options: [
+      { text: "A. The sunk cost of HK$600 should make her go to the festival", correct: false },
+      { text: "B. The opportunity cost of attending the talk is HK$600", correct: false },
+      { text: "C. The opportunity cost of attending the talk is the enjoyment from the festival", correct: true },
+      { text: "D. There is no opportunity cost because the talk is free", correct: false }
+    ],
+    explanation: "The HK$600 is a sunk cost — it should not affect the decision. The opportunity cost of the talk is the best alternative forgone: the enjoyment from the festival.",
+    topic: "sunk_cost"
+  },
+  {
+    id: "hkdse3",
+    question: "A factory can produce either 100 cars or 200 motorcycles with the same resources. What is the opportunity cost of producing one car?",
+    options: [
+      { text: "A. 0.5 motorcycles", correct: false },
+      { text: "B. 1 motorcycle", correct: false },
+      { text: "C. 2 motorcycles", correct: true },
+      { text: "D. 200 motorcycles", correct: false }
+    ],
+    explanation: "100 cars = 200 motorcycles, so 1 car = 200÷100 = 2 motorcycles.",
+    topic: "opportunity_cost"
+  },
+  {
+    id: "hkdse4",
+    question: "Which of the following is NOT an example of opportunity cost?",
+    options: [
+      { text: "A. A student giving up a part-time job to attend university", correct: false },
+      { text: "B. A government building a hospital instead of a school", correct: false },
+      { text: "C. A company paying rent for its office", correct: true },
+      { text: "D. A farmer growing rice instead of vegetables", correct: false }
+    ],
+    explanation: "Paying rent is an explicit cost, not an opportunity cost. Opportunity cost is about the best alternative forgone, not direct monetary payments.",
+    topic: "opportunity_cost"
+  },
+  {
+    id: "hkdse5",
+    question: "Explain why a point INSIDE the Production Possibility Curve represents inefficient production. (Select the best explanation)",
+    options: [
+      { text: "A. The economy does not have enough resources", correct: false },
+      { text: "B. The economy is not using all its resources fully or efficiently", correct: true },
+      { text: "C. The economy should produce more of both goods", correct: false },
+      { text: "D. The economy cannot reach this point with current technology", correct: false }
+    ],
+    explanation: "Any point INSIDE the PPC means resources are either unemployed or not used efficiently. The economy COULD produce more without sacrificing either good.",
+    topic: "ppc"
+  },
+  {
+    id: "hkdse6",
+    question: "David can produce 10 cakes or 5 pies in one hour. Emily can produce 8 cakes or 4 pies in one hour.\n\nWhich statement is TRUE?",
+    options: [
+      { text: "A. David has an absolute advantage in producing both goods", correct: true },
+      { text: "B. Emily has a comparative advantage in producing cakes", correct: false },
+      { text: "C. David has a comparative advantage in producing pies", correct: false },
+      { text: "D. Neither has a comparative advantage in either good", correct: false }
+    ],
+    explanation: "David can produce more of BOTH goods (10>8 cakes, 5>4 pies), so he has absolute advantage in both. Their opportunity costs are identical (1 pie = 2 cakes for both), so neither has comparative advantage.",
+    topic: "comparative_advantage"
+  },
+  {
+    id: "hkdse7",
+    question: "A student spends HK$200 on a non-refundable gym membership. After one visit, she realises she dislikes the gym. A friend offers her a free yoga class at the same time.\n\nFrom an economist's perspective, what should she do?",
+    options: [
+      { text: "A. Continue going to the gym because she already paid", correct: false },
+      { text: "B. Go to the yoga class because the gym membership is a sunk cost", correct: true },
+      { text: "C. Calculate the average cost per visit to decide", correct: false },
+      { text: "D. Do neither and stay home", correct: false }
+    ],
+    explanation: "The HK$200 is a sunk cost — irrecoverable and irrelevant to the decision. She should choose based on future benefits: yoga (which she enjoys) vs gym (which she dislikes).",
+    topic: "sunk_cost"
+  },
+  {
+    id: "hkdse8",
+    question: "A government has a fixed budget of HK$10 billion. It must choose between building a highway (benefit: $8 billion) or a railway (benefit: $12 billion). It cannot do both.\n\nWhat is the opportunity cost of choosing the railway?",
+    options: [
+      { text: "A. HK$10 billion", correct: false },
+      { text: "B. HK$4 billion", correct: false },
+      { text: "C. HK$8 billion (the benefit of the highway)", correct: true },
+      { text: "D. HK$20 billion", correct: false }
+    ],
+    explanation: "The opportunity cost is the value of the BEST alternative forgone. The highway's benefit ($8 billion) is the best alternative to the railway.",
+    topic: "opportunity_cost"
+  }
+];
+
+const ACHIEVEMENTS = [
+  { id: "rational", emoji: "🧠", name: "Rational Decision Maker", desc: "Correctly answer 6+ questions", cond: s => s.correctAnswers >= 6 },
+  { id: "planner", emoji: "💰", name: "Future Planner", desc: "Choose saving/investment 2+ times", cond: s => s.investmentChoices >= 2 },
+  { id: "scholar", emoji: "📚", name: "Scholar", desc: "Maintain Knowledge above 70", cond: s => s.stats.knowledge >= 70 },
+  { id: "balanced", emoji: "⚖️", name: "Balanced Economist", desc: "All stats above 40", cond: s => s.stats.money > 40 && s.stats.time > 40 && s.stats.knowledge > 40 && s.stats.happiness > 40 && s.stats.relationships > 40 && s.stats.reputation > 40 },
+  { id: "comparative", emoji: "📈", name: "Comparative Advantage", desc: "Correctly solve the comparative advantage challenge", cond: s => s.calcCorrect >= 3 },
+  { id: "sunk", emoji: "🚫", name: "Sunk Cost Survivor", desc: "Correctly identify a sunk-cost situation", cond: s => s.sunkCostCorrect },
+  { id: "risk", emoji: "🎲", name: "Risk Taker", desc: "Make 2+ risky choices", cond: s => s.riskChoices >= 2 },
+  { id: "social", emoji: "❤️", name: "Social Butterfly", desc: "Maintain Relationships above 70", cond: s => s.stats.relationships >= 70 },
+  { id: "crisis", emoji: "🛡️", name: "Crisis Manager", desc: "Survive the economic crisis event", cond: s => s.survivedCrisis },
+  { id: "startup", emoji: "🚀", name: "Entrepreneur", desc: "Choose the startup path", cond: s => s.startupChosen }
+];
+
+const ENDING_SCENE = {
+  title: "The Long Road Ahead",
+  desc: "Your year of choices has come to a close. But in economics, the consequences of decisions echo far beyond the moment they are made. Here is what the future held for the paths you chose...",
+  context: "💡 Every choice you made sent ripples through time. Some consequences arrived quickly. Others took months, even years, to reveal themselves."
+};
+
+const ZH_EVENTS = {
+  saturday: ['星期六下午', '星期六下午，你有五小時空閒時間。朋友約你踢足球，經濟學筆記在等著你，而附近咖啡店也有兼職工作。', '💡 核心概念：稀缺性：時間有限，所以你必須作出選擇。'],
+  parttime: ['兼職工作邀請', '學校附近新開了一間餐廳，聘請學生每小時 HK$75，每週六工作四小時。收入可以幫助日常開支，但你要放棄週末時間。', '💡 核心概念：時間的機會成本：那些時間還可以用來做甚麼？'],
+  concert: ['音樂會兩難', '你三個月前買了一張今晚的 HK$500 音樂會門票。但最好的朋友剛邀請你參加一位著名經濟學家在香港舉行的見面會。你只能選一項。', '💡 核心概念：沉沒成本：無論你怎樣決定，HK$500 都已經花掉。'],
+  bonus: ['HK$1,000 獎金', '叔叔送你 HK$1,000，獎勵你最近的考試成績。你要決定如何使用這筆意外之財。每個選項都有不同回報，也有不同代價。', '💡 核心概念：消費與儲蓄：現在花錢的機會成本是甚麼？'],
+  exam: ['經濟學考試', '三日後便是 HKDSE 經濟學模擬考試，而你感到準備不足。你每天有六小時可以分配，會怎樣使用考試前的 72 小時？', '💡 核心概念：邊際決策：每一個額外小時都有不同回報。'],
+  foodtruck: ['週末餐車', '你繼承了一輛小型餐車，可以經營一個週末！材料有限：足夠製作 30 個薄餅，或 60 個漢堡，不能兩者都做。', '💡 核心概念：生產可能曲線：有限資源迫使我們在不同選項之間取捨。'],
+  summer: ['暑假計劃', '學校放假八星期！你有三種截然不同的暑假安排。每條路都會影響你明年的發展。', '💡 核心概念：人力資本：今天投資自己，明天會得到回報。'],
+  university: ['人生重大決定', 'HKDSE 成績公布了。你的未來可以走向四個截然不同的方向。每條路都會塑造你的事業和身份，沒有完美答案，只有你必須承擔的取捨。', '💡 核心概念：人力資本與投資：教育是對未來收入能力的投資。'],
+  firstyear: ['第一年的現實', '作出重大決定後的第一年已經完成。現在你要面對選擇帶來的現實後果。你選擇的道路正以意想不到的方式影響日常生活。', '💡 核心概念：路徑依賴：早期選擇會限制後來的選項。'],
+  investment: ['投資機會', '朋友帶來一項「萬無一失」的投資：一家尋求種子資金的新手機應用程式公司。他們需要 HK$15,000，承諾兩年內回報三倍。你的儲蓄剛好是 HK$15,000。', '💡 核心概念：風險與回報：承諾回報越高，通常代表風險越高。'],
+  housing: ['住屋決定', '你需要搬離家庭住所。市中心的小型單位月租 HK$8,000；乘港鐵 45 分鐘可到的單位月租 HK$4,500。留在家中免費，但會限制你的獨立生活。', '💡 核心概念：金錢與時間的機會成本：較便宜的租金可能需要更多通勤時間。'],
+  career: ['事業十字路口', '兩年過去了，你的行業正在迅速轉變。人工智能正在改變傳統職位，你必須適應，否則可能被淘汰。下一步會怎樣？', '💡 核心概念：創造性破壞：新科技淘汰舊工作，也創造新機會。'],
+  startup: ['創業邀請', '一位昔日同學邀請你共同創辦科技初創企業。對方有構思和原型，你負責商業部分，但必須辭去穩定工作，而公司成功機率只有 20%。', '💡 核心概念：預期值：把成功機率與可能回報一起衡量。'],
+  crisis: ['經濟危機來襲', '全球衰退令香港受到影響。僱主宣布所有員工減薪 15%，通脹正在上升，而你的投資下跌 30%。你會怎樣應對？', '💡 核心概念：經濟韌性：分散投資和儲蓄緩衝能幫助你面對衝擊。'],
+  mayor: ['你成為領袖', '你當選領導一項社區改善計劃，預算為 HK$1 億。醫療、教育、交通和住屋都需要資金，每個選擇都會創造受益者和代價。歡迎來到公共經濟學。', '💡 核心概念：公共選擇：政府面對稀缺性，必須把資源分配到邊際利益等於邊際成本的地方。']
+};
+
+const ZH_UI = {
+  'Language': '語言', 'The Cost of Your Life': '你的人生成本', 'An Economics Adventure for HKDSE Students': '給 HKDSE 學生的經濟學冒險', '▶ START YOUR JOURNEY': '▶ 開始你的旅程',
+  'Make real decisions with real consequences': '作出真正的決定，承擔真正的後果', 'Learn Opportunity Cost through experience': '透過體驗學習機會成本', 'Practice HKDSE-style exam questions': '練習 HKDSE 類型試題', 'About 40–55 minutes per session': '每次約需 40 至 55 分鐘',
+  'Create Your Character': '建立你的角色', 'Who will you become this year?': '今年的你會成為怎樣的人？', 'Your Name': '你的姓名', 'Enter your name': '輸入姓名', 'Age': '年齡', 'Choose Your Personality': '選擇你的性格', 'Begin Your Story →': '開始你的故事 →',
+  'Welcome, Economist': '歡迎，經濟學家', 'Year 1 • Tutorial': '第一年 • 教學', 'Resources are limited.': '資源有限。', 'Every choice has a cost.': '每個選擇都有代價。', 'Decisions have delayed consequences.': '決定會帶來延遲後果。', 'There is no "right" answer.': '沒有唯一的「正確」答案。', 'Understood — Let\'s Begin →': '明白了，開始吧 →',
+  'Life Events': '人生事件', 'Calculation Challenge': '計算挑戰', 'Test Your Understanding': '測試你的理解', 'Mid-Year Report': '年中報告', 'Continue Your Journey →': '繼續你的旅程 →', 'Economics Lab': '經濟學實驗室', 'HKDSE Challenge': 'HKDSE 挑戰', 'Your Life Summary': '你的人生總結', 'Choice:': '選擇：', 'Immediate effects:': '即時影響：', 'Opportunity cost:': '機會成本：',
+  'Correct!': '答對！', 'Not quite.': '不完全正確。', 'Next Question →': '下一題 →', 'See Final Results →': '查看最終結果 →', 'Year 1 Complete': '第一年完成', 'Achievements Unlocked': '已解鎖成就', 'Economist Level': '經濟學家級別', 'Play Again': '再玩一次', 'View Session Data': '查看遊戲資料'
+};
+
+const ZH_CHOICES = {
+  study: '📚 在圖書館研習經濟學', football: '⚽ 和朋友踢足球', work: '💰 在咖啡店兼職（每小時 $75 × 5）', games: '🎮 在家玩電子遊戲',
+  accept: '✅ 接受工作（每週 4 小時，$300）', decline: '❌ 拒絕，專注學習和休息', negotiate: '🤝 協商只工作 2 小時（$150）',
+  concert: '🎵 去音樂會（已付 $500）', economist: '🎓 與著名經濟學家見面', sell: '💸 以 $400 售出門票，參加見面會',
+  spend: '🛍️ 買新波鞋和遊戲', save: '🏦 存入銀行（年利率 2%）', invest: '📈 投資股票模擬（$1,000）', family: '👨‍👩‍👧 買食材幫助家人',
+  intense: '📚 密集溫習（每天 6 小時，不休息）', balanced: '⚖️ 平衡安排：每天溫習 4 小時、休息 2 小時', relax: '😌 主要休息，只作輕量溫習',
+  pizza: '🍕 只製作 30 個薄餅（每個 $80 = $2,400）', burger: '🍔 只製作 60 個漢堡（每個 $40 = $2,400）', mix: '⚖️ 混合製作：15 個薄餅 + 30 個漢堡（$2,400）',
+  intern: '🏢 暑期實習（無薪，每週 40 小時）', job: '💰 全職暑期工作（每小時 $50，每週 40 小時）', travel: '✈️ 和朋友作平價旅遊（$5,000）',
+  university: '🎓 入讀大學（4 年，每年學費 $42,000）', business: '🚀 創辦小型企業（$20,000 資本）', vocational: '🔧 職業訓練（2 年，$10,000）',
+  double: '📚 全力發展已選定的道路', explore: '🌐 探索興趣和嗜好', network: '🤝 專注建立人際網絡',
+  allin: '💰 把 $15,000 全部投資於初創公司', half: '⚖️ 投資 $7,500，保留 $7,500 作安全儲蓄', safe: '🏦 把所有資金保留在儲蓄中', research: '🔍 花 $500 作研究，稍後決定',
+  city: '🏙️ 市中心單位（$8,000/月，通勤 10 分鐘）', suburb: '🏠 郊區單位（$4,500/月，通勤 45 分鐘）', home: '🏡 留在家中（免費，但規矩嚴格）',
+  reskill: '📚 修讀人工智能及數據分析課程（$10,000）', pivot: '🔄 轉到完全不同的行業', specialise: '🎯 深耕專門領域', status: '😌 維持現狀',
+  cofound: '🚀 共同創辦初創企業（辭去穩定工作）', advise: '💡 兼職提供建議（保留日間工作）', pass: '🚫 禮貌地拒絕',
+  cut: '✂️ 削減所有非必要開支', side: '💰 開始副業彌補收入損失', borrow: '💳 使用信貸維持生活方式',
+  health: '🏥 興建公立醫院（$1 億）', education: '🏫 興建 5 間新學校（$1 億）', transport: '🚇 延伸港鐵至服務不足的地區（$1 億）', split: '⚖️ 分配預算至醫療、教育、交通和住屋'
+};
+
+// ==================== GAME ENGINE ====================
+const G = {
+  state: null,
+  language: localStorage.getItem('choice_language') || 'en',
+
+  ui(text) { return this.language === 'zh-HK' && ZH_UI[text] ? ZH_UI[text] : text; },
+
+  localizedEvent(event) {
+    if (this.language !== 'zh-HK' || !ZH_EVENTS[event.id]) return event;
+    const [title, desc, context] = ZH_EVENTS[event.id];
+    const choices = event.choices.map(choice => ({ ...choice, text: ZH_CHOICES[choice.id] || choice.text }));
+    return { ...event, title, desc, context, choices };
+  },
+
+  applyLanguage() {
+    const isZh = this.language === 'zh-HK';
+    document.documentElement.lang = isZh ? 'zh-HK' : 'en';
+    document.getElementById('lang-en')?.classList.toggle('active', !isZh);
+    document.getElementById('lang-zh')?.classList.toggle('active', isZh);
+    document.getElementById('language-label').textContent = this.ui('Language');
+    if (isZh) {
+      document.querySelector('.start-subtitle').innerHTML = '你的人生成本<br>給 HKDSE 學生的經濟學冒險';
+      document.querySelector('.start-btn').textContent = this.ui('▶ START YOUR JOURNEY');
+      document.querySelector('.char-title').textContent = '建立你的角色';
+      document.querySelector('.char-subtitle').textContent = '今年的你會成為怎樣的人？';
+      document.querySelectorAll('.form-label')[0].textContent = '你的姓名';
+      document.querySelectorAll('.form-label')[2].textContent = '選擇你的性格';
+      document.querySelector('.btn-primary').textContent = '開始你的故事 →';
+    }
+    const replacements = ['The Cost of Your Life', 'An Economics Adventure for HKDSE Students', 'Make real decisions with real consequences', 'Learn Opportunity Cost through experience', 'Practice HKDSE-style exam questions', 'About 40–55 minutes per session', 'Create Your Character', 'Who will you become this year?', 'Your Name', 'Age', 'Choose Your Personality', 'Begin Your Story →', 'Welcome, Economist', 'Year 1 • Tutorial', 'Understood — Let\'s Begin →'];
+    replacements.forEach(english => {
+      document.querySelectorAll('.app *').forEach(el => {
+        if (el.children.length === 0 && el.textContent.trim() === english) el.textContent = this.ui(english);
+      });
+    });
+    const nameInput = document.getElementById('char-name');
+    if (nameInput) nameInput.placeholder = isZh ? '輸入姓名' : 'Enter your name';
+  },
+
+  setLanguage(language) {
+    this.language = language;
+    localStorage.setItem('choice_language', language);
+    window.location.reload();
+  },
+
+  defaultState() {
+    return {
+      name: "", age: 16, personality: "",
+      stats: { money: 500, time: 100, knowledge: 50, happiness: 50, relationships: 50, reputation: 50 },
+      currentEvent: 0,
+      eventHistory: [],
+      delayedQueue: [],
+      calcIndex: 0, calcSubIndex: 0,
+      hkdseIndex: 0,
+      correctAnswers: 0, totalQuestions: 0,
+      calcCorrect: 0, calcTotal: 0,
+      hkdseCorrect: 0, hkdseTotal: 0,
+      investmentChoices: 0, riskChoices: 0,
+      sunkCostCorrect: false,
+      survivedCrisis: false,
+      startupChosen: false,
+      achievements: [],
+      biggestOpportunityCost: null,
+      bestDecision: null,
+      misconceptions: [],
+      midreportShown: false,
+      phase: "events"
+    };
+  },
+
+  init() { this.loadState(); this.applyLanguage(); },
+
+  saveState() {
+    try { localStorage.setItem('choice_game_v2', JSON.stringify(this.state)); } catch(e) {}
+  },
+
+  loadState() {
+    try {
+      const saved = localStorage.getItem('choice_game_v2');
+      if (saved) this.state = JSON.parse(saved);
+    } catch(e) {}
+  },
+
+  clearState() {
+    try { localStorage.removeItem('choice_game_v2'); } catch(e) {}
+  },
+
+  screen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    this.applyLanguage();
+    window.scrollTo(0, 0);
+  },
+
+  toCharacter() { this.screen('character'); },
+
+  selectPersonality(p) {
+    if (!this.state) this.state = this.defaultState();
+    this.state.personality = p;
+    document.querySelectorAll('.personality-card').forEach(c => c.classList.remove('selected'));
+    const el = document.querySelector('[data-p="' + p + '"]');
+    if (el) el.classList.add('selected');
+  },
+
+  startGame() {
+    const name = document.getElementById('char-name').value.trim();
+    const age = parseInt(document.getElementById('char-age').value) || 16;
+    if (!name) { alert('Please enter your name!'); return; }
+    if (!this.state || !this.state.personality) { alert('Please choose a personality!'); return; }
+
+    const personality = this.state.personality;
+    this.state = this.defaultState();
+    this.state.name = name;
+    this.state.age = age;
+    this.state.personality = personality;
+
+    const bonuses = {
+      ambitious: { knowledge: 5, happiness: -2 },
+      social: { relationships: 5, knowledge: -2 },
+      entrepreneurial: { money: 50 },
+      balanced: { money: 2, time: 2, knowledge: 2, happiness: 2, relationships: 2, reputation: 2 }
+    };
+    const b = bonuses[personality] || {};
+    for (let k in b) this.state.stats[k] += b[k];
+    this.clampStats();
+    this.saveState();
+    this.screen('tutorial');
+  },
+
+  toEvents() {
+    this.screen('game');
+    this.renderEvent();
+  },
+
+  clampStats() {
+    const s = this.state.stats;
+    s.money = Math.max(-50000, Math.min(200000, s.money));
+    s.time = Math.max(0, Math.min(200, s.time));
+    s.knowledge = Math.max(0, Math.min(100, s.knowledge));
+    s.happiness = Math.max(0, Math.min(100, s.happiness));
+    s.relationships = Math.max(0, Math.min(100, s.relationships));
+    s.reputation = Math.max(0, Math.min(100, s.reputation));
+  },
+
+  fmtMoney(v) {
+    if (Math.abs(v) >= 1000) return (v >= 0 ? '' : '-') + '$' + (Math.abs(v) / 1000).toFixed(1) + 'k';
+    return (v >= 0 ? '$' : '-$') + Math.abs(v);
+  },
+
+  updateStatsBar(changes) {
+    const ids = { money: 'v-money', time: 'v-time', knowledge: 'v-knowledge', happiness: 'v-happiness', relationships: 'v-relations', reputation: 'v-reputation' };
+    const stIds = { money: 'st-money', time: 'st-time', knowledge: 'st-knowledge', happiness: 'st-happiness', relationships: 'st-relations', reputation: 'st-reputation' };
+    for (let k in changes) {
+      const el = document.getElementById(ids[k]);
+      const stEl = document.getElementById(stIds[k]);
+      if (el) {
+        if (k === 'money') el.textContent = this.fmtMoney(this.state.stats.money);
+        else el.textContent = this.state.stats[k];
+      }
+      if (stEl) {
+        stEl.classList.remove('pop');
+        void stEl.offsetWidth;
+        stEl.classList.add('pop');
+      }
+    }
+  },
+
+  applyEffects(effects) {
+    for (let k in effects) {
+      if (this.state.stats[k] !== undefined) this.state.stats[k] += effects[k];
+    }
+    this.clampStats();
+    this.updateStatsBar(effects);
+  },
+
+  checkDelayed() {
+    const triggered = [];
+    this.state.delayedQueue = this.state.delayedQueue.filter(d => {
+      if (d.trigger === this.state.currentEvent) {
+        triggered.push(d);
+        return false;
+      }
+      return true;
+    });
+    return triggered;
+  },
+
+  renderEvent() {
+    const main = document.getElementById('game-main');
+    const ev = this.localizedEvent(EVENTS[this.state.currentEvent]);
+
+    // After last event, go to ending scene first (to catch trigger=15 consequences)
+    if (!ev) {
+      this.toEndingScene();
+      return;
+    }
+
+    // Check for mid-year report after event 8
+    if (this.state.currentEvent === 8 && this.state.phase === 'events' && !this.state.midreportShown) {
+      this.state.phase = 'midreport';
+      this.state.midreportShown = true;
+      this.showMidReport();
+      return;
+    }
+
+    const delayed = this.checkDelayed();
+    document.getElementById('game-subtitle').textContent = `Year 1 • Event ${this.state.currentEvent + 1} of ${EVENTS.length}`;
+    document.getElementById('progress-text').textContent = `Life Events: ${this.state.currentEvent} / ${EVENTS.length}`;
+    document.getElementById('progress-fill').style.width = `${(this.state.currentEvent / EVENTS.length) * 100}%`;
+
+    let html = '';
+    delayed.forEach(d => {
+      html += `<div class="delayed-banner">⏰ ${d.text}</div>`;
+      this.applyEffects(d.effects);
+    });
+
+    html += `
+      <div class="event-card fade-in">
+        <div class="event-header">
+          <div class="event-badge">${ev.badge}</div>
+          <div class="event-title">${ev.title}</div>
+        </div>
+        <div class="event-body">
+          <div class="event-desc">${ev.desc}</div>
+          <div class="event-context">${ev.context}</div>
+        </div>
+      </div>
+      <div class="choices">
+    `;
+
+    ev.choices.forEach((ch, i) => {
+      html += `
+        <button class="choice-btn fade-in" style="animation-delay:${i * 0.08}s" onclick="G.makeChoice(${i})">
+          <span class="choice-icon">${ch.icon}</span>
+          <span class="choice-text">${ch.text}</span>
+        </button>
+      `;
+    });
+    html += '</div>';
+    main.innerHTML = html;
+  },
+
+  makeChoice(idx) {
+    const ev = EVENTS[this.state.currentEvent];
+    const ch = ev.choices[idx];
+
+    this.applyEffects(ch.effects);
+
+    if (ch.delayed) {
+      ch.delayed.forEach(d => {
+        this.state.delayedQueue.push({
+          trigger: this.state.currentEvent + d.trigger,
+          effects: d.effects,
+          text: d.text
+        });
+      });
+    }
+
+    this.state.eventHistory.push({
+      eventId: ev.id, eventTitle: ev.title,
+      choiceId: ch.id, choiceText: ch.text,
+      effects: ch.effects, opportunityCost: ch.opportunityCost,
+      bestAlternative: ch.bestAlt, misconception: ch.misconception, risk: ch.risk
+    });
+
+    if (['save', 'invest', 'invest30', 'small', 'allin', 'half'].includes(ch.id)) this.state.investmentChoices++;
+    if (ch.risk) this.state.riskChoices++;
+    if (ch.misconception === 'sunk_cost' && ch.id === 'economist') this.state.sunkCostCorrect = true;
+    if (ev.id === 'crisis') this.state.survivedCrisis = true;
+    if (ch.id === 'cofound' || ch.id === 'business') this.state.startupChosen = true;
+
+    const costVal = this.estimateCostValue(ch);
+    if (!this.state.biggestOpportunityCost || costVal > this.state.biggestOpportunityCost.value) {
+      this.state.biggestOpportunityCost = { event: ev.title, choice: ch.text, cost: ch.opportunityCost, value: costVal };
+    }
+
+    this.showConsequence(ch, ev);
+  },
+
+  estimateCostValue(ch) {
+    const m = ch.opportunityCost.match(/[\d,]+/);
+    if (m) return parseInt(m[0].replace(/,/g, ''));
+    if (ch.opportunityCost.includes('Knowledge')) return 500;
+    if (ch.opportunityCost.includes('Happiness')) return 300;
+    return 100;
+  },
+
+  showConsequence(ch, ev) {
+    const main = document.getElementById('game-main');
+    let statsHtml = '';
+    const labels = { money: '💰 Money', time: '⏰ Time', knowledge: '📚 Knowledge', happiness: '😊 Happiness', relationships: '❤️ Relations', reputation: '⭐ Reputation' };
+    for (let k in ch.effects) {
+      const v = ch.effects[k];
+      const cls = v > 0 ? 'up' : (v < 0 ? 'down' : '');
+      const valStr = k === 'money' ? (v > 0 ? '+$' + v : '-$' + Math.abs(v)) : (v > 0 ? '+' + v : v);
+      if (labels[k]) statsHtml += `<span class="consequence-stat ${cls}">${labels[k]} ${valStr}</span>`;
+    }
+
+    let reflectHtml = '';
+    if (ev.revealAfter) {
+      reflectHtml = `
+        <div class="reflection-box" style="margin-top:18px;text-align:left;">
+          <div class="reflection-title">💡 Economic Reflection</div>
+          <div class="reflection-text">
+            <strong>You chose:</strong> ${ch.text}<br><br>
+            <strong>Opportunity Cost:</strong> ${ch.opportunityCost}<br><br>
+            <em>Remember: Opportunity cost is the <strong>best alternative forgone</strong> — not everything you give up.</em>
+          </div>
+        </div>`;
+    }
+
+    main.innerHTML = `
+      <div class="consequence-overlay">
+        <div class="consequence-box fade-in">
+          <div class="consequence-emoji">${ch.icon}</div>
+          <div class="consequence-title">Choice Made!</div>
+          <div class="consequence-desc">${ch.text}</div>
+          <div class="consequence-stats">${statsHtml}</div>
+          ${reflectHtml}
+          <button class="btn-primary" onclick="G.nextEvent()" style="margin-top:18px;">Continue →</button>
+        </div>
+      </div>`;
+  },
+
+  nextEvent() {
+    this.state.currentEvent++;
+    this.saveState();
+    this.renderEvent();
+  },
+
+  // ==================== ENDING SCENE ====================
+  toEndingScene() {
+    this.state.currentEvent = 15; // Set to 15 so checkDelayed catches trigger=15
+    const delayed = this.checkDelayed();
+    this.saveState();
+    this.screen('ending');
+    this.renderEnding(delayed);
+  },
+
+  renderEnding(delayed) {
+    const main = document.getElementById('ending-main');
+    const scene = ENDING_SCENE;
+
+    let html = `
+      <div class="ending-scene">
+        <div class="ending-emoji">🌅</div>
+        <div class="ending-title">${scene.title}</div>
+        <div class="ending-text">${scene.desc}</div>
+    `;
+
+    if (delayed.length > 0) {
+      html += `<div class="ending-consequences fade-in">`;
+      html += `<div class="reflection-title" style="margin-bottom:12px;">⏰ Long-Term Consequences</div>`;
+      delayed.forEach(d => {
+        html += `<div class="delayed-banner" style="margin-bottom:10px;">${d.text}</div>`;
+        this.applyEffects(d.effects);
+      });
+      html += `</div>`;
+    } else {
+      html += `
+        <div class="ending-consequences fade-in">
+          <div class="reflection-title" style="margin-bottom:12px;">⏰ Looking Back</div>
+          <div class="card-text" style="text-align:left;">Your choices this year were cautious and immediate. The boldest long-term consequences require bolder risks. Next time, consider how today's decisions echo into tomorrow.</div>
+        </div>
+      `;
+    }
+
+    html += `
+        <div class="ending-text" style="font-size:14px;margin-top:8px;">${scene.context}</div>
+        <button class="btn-primary" onclick="G.finishEnding()" style="max-width:340px;margin-top:8px;">Continue to Economics Lab →</button>
+      </div>
+    `;
+
+    main.innerHTML = html;
+  },
+
+  finishEnding() {
+    this.toCalculations();
+  },
+
+  // ==================== MID-YEAR REPORT ====================
+  showMidReport() {
+    const s = this.state;
+    const main = document.getElementById('midreport-main');
+    const accuracy = s.totalQuestions > 0 ? Math.round((s.correctAnswers / s.totalQuestions) * 100) : 0;
+
+    let html = `
+      <div class="report-header fade-in">
+        <div class="report-emoji">📋</div>
+        <div class="report-title">Mid-Year Report</div>
+        <div class="report-subtitle">${s.name}, Age ${s.age} — Checkpoint</div>
+      </div>
+      <div class="report-stats fade-in">
+        <div class="report-stat"><div class="report-stat-icon">💰</div><div class="report-stat-value">${this.fmtMoney(s.stats.money)}</div><div class="report-stat-label">Money</div></div>
+        <div class="report-stat"><div class="report-stat-icon">📚</div><div class="report-stat-value">${s.stats.knowledge}</div><div class="report-stat-label">Knowledge</div></div>
+        <div class="report-stat"><div class="report-stat-icon">😊</div><div class="report-stat-value">${s.stats.happiness}</div><div class="report-stat-label">Happiness</div></div>
+        <div class="report-stat"><div class="report-stat-icon">❤️</div><div class="report-stat-value">${s.stats.relationships}</div><div class="report-stat-label">Relations</div></div>
+      </div>
+      <div class="report-section fade-in">
+        <div class="report-section-title">📊 Progress So Far</div>
+        <div class="report-item"><span class="report-item-label">Events Completed</span><span class="report-item-value">${s.currentEvent} / ${EVENTS.length}</span></div>
+        <div class="report-item"><span class="report-item-label">Delayed Consequences Triggered</span><span class="report-item-value">${s.eventHistory.filter(h => h.delayed && h.delayed.length > 0).length}</span></div>
+        <div class="report-item"><span class="report-item-label">Question Accuracy</span><span class="report-item-value">${accuracy}%</span></div>
+      </div>
+    `;
+
+    if (s.biggestOpportunityCost) {
+      html += `
+        <div class="report-section fade-in">
+          <div class="report-section-title">⚖️ Biggest Trade-off So Far</div>
+          <div class="card-text" style="margin-bottom:12px;">In <strong>${s.biggestOpportunityCost.event}</strong>, you chose <strong>${s.biggestOpportunityCost.choice}</strong>.</div>
+          <div class="reflection-box" style="margin:0;">
+            <div class="reflection-text"><strong>What you gave up:</strong> ${s.biggestOpportunityCost.cost}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="report-section fade-in">
+        <div class="report-section-title">🎯 The Second Half</div>
+        <div class="card-text">Your early choices are still unfolding. Long-term consequences from your university decision, summer plans, and investment choices will appear in the remaining events — and even beyond, in the Ending Scene. Choose wisely!</div>
+      </div>
+      <div style="padding:0 0 32px;"><button class="btn-primary" onclick="G.continueAfterMid()">Continue Your Journey →</button></div>
+    `;
+
+    main.innerHTML = html;
+    this.screen('midreport');
+  },
+
+  continueAfterMid() {
+    this.state.phase = 'events';
+    this.saveState();
+    this.screen('game');
+    this.renderEvent();
+  },
+
+  // ==================== CALCULATIONS ====================
+  toCalculations() {
+    this.state.phase = 'calculations';
+    this.saveState();
+    this.screen('calculation');
+    this.renderCalculation();
+  },
+
+  renderCalculation() {
+    const main = document.getElementById('calc-main');
+    const calc = CALCULATIONS[this.state.calcIndex];
+    if (!calc) { this.toHKDSE(); return; }
+
+    let html = `<div class="calc-wrap fade-in">`;
+    html += `<div class="calc-title">${calc.title}</div>`;
+    html += `<div class="calc-text">${calc.question}</div>`;
+
+    if (calc.table) {
+      html += `<table class="calc-table"><thead><tr>`;
+      calc.table.headers.forEach(h => html += `<th>${h}</th>`);
+      html += `</tr></thead><tbody>`;
+      calc.table.rows.forEach(row => { html += `<tr>`; row.forEach(c => html += `<td>${c}</td>`); html += `</tr>`; });
+      html += `</tbody></table>`;
+    }
+
+    if (calc.type === 'mcq' && calc.options) {
+      html += `<div class="calc-options">`;
+      calc.options.forEach((opt, i) => {
+        html += `<button class="calc-option" onclick="G.answerCalc(${i})">${opt.text}</button>`;
+      });
+      html += `</div><div id="calc-feedback"></div>`;
+    } else if (calc.subquestions) {
+      const sub = calc.subquestions[this.state.calcSubIndex];
+      if (sub) {
+        html += `<div style="margin-top:16px;padding:18px;background:var(--bg);border-radius:14px;border:1px solid var(--border);">`;
+        html += `<div style="font-weight:700;margin-bottom:14px;font-size:15px;">${sub.q}</div>`;
+        html += `<div class="calc-options">`;
+        sub.options.forEach((opt, i) => {
+          html += `<button class="calc-option" onclick="G.answerCalcSub(${i})">${opt.text}</button>`;
+        });
+        html += `</div><div id="calc-feedback"></div></div>`;
+      } else {
+        this.state.calcIndex++;
+        this.state.calcSubIndex = 0;
+        this.saveState();
+        this.renderCalculation();
+        return;
+      }
+    }
+
+    html += `</div>`;
+    main.innerHTML = html;
+  },
+
+  answerCalc(idx) {
+    const calc = CALCULATIONS[this.state.calcIndex];
+    const opt = calc.options[idx];
+    const fb = document.getElementById('calc-feedback');
+    const btns = document.querySelectorAll('#calc-main .calc-option');
+
+    btns.forEach((b, i) => {
+      b.disabled = true;
+      if (i === idx) b.classList.add(opt.correct ? 'correct' : 'wrong');
+      if (calc.options[i].correct) b.classList.add('correct');
+    });
+
+    this.state.totalQuestions++;
+    this.state.calcTotal++;
+    if (opt.correct) {
+      this.state.correctAnswers++;
+      this.state.calcCorrect++;
+      fb.innerHTML = `<div class="feedback-box correct">✅ Correct! ${calc.explanation}</div>`;
+    } else {
+      fb.innerHTML = `<div class="feedback-box wrong">❌ Not quite. ${calc.explanation}</div>`;
+      this.showTip('calc-feedback');
+    }
+
+    fb.innerHTML += `<button class="btn-primary" onclick="G.nextCalc()" style="margin-top:14px;">Next →</button>`;
+    this.saveState();
+  },
+
+  answerCalcSub(idx) {
+    const calc = CALCULATIONS[this.state.calcIndex];
+    const sub = calc.subquestions[this.state.calcSubIndex];
+    const opt = sub.options[idx];
+    const fb = document.getElementById('calc-feedback');
+    const btns = document.querySelectorAll('#calc-main .calc-option');
+
+    btns.forEach((b, i) => {
+      b.disabled = true;
+      if (i === idx) b.classList.add(opt.correct ? 'correct' : 'wrong');
+      if (sub.options[i].correct) b.classList.add('correct');
+    });
+
+    this.state.totalQuestions++;
+    this.state.calcTotal++;
+    if (opt.correct) {
+      this.state.correctAnswers++;
+      this.state.calcCorrect++;
+      fb.innerHTML = `<div class="feedback-box correct">✅ Correct! ${sub.explanation}</div>`;
+    } else {
+      fb.innerHTML = `<div class="feedback-box wrong">❌ Not quite. ${sub.explanation}</div>`;
+      this.showTip('calc-feedback');
+    }
+
+    fb.innerHTML += `<button class="btn-primary" onclick="G.nextCalcSub()" style="margin-top:14px;">Next →</button>`;
+    this.saveState();
+  },
+
+  nextCalc() {
+    this.state.calcIndex++;
+    this.saveState();
+    this.renderCalculation();
+  },
+
+  nextCalcSub() {
+    const calc = CALCULATIONS[this.state.calcIndex];
+    this.state.calcSubIndex++;
+    if (this.state.calcSubIndex >= calc.subquestions.length) {
+      this.state.calcIndex++;
+      this.state.calcSubIndex = 0;
+    }
+    this.saveState();
+    this.renderCalculation();
+  },
+
+  showTip(feedbackId) {
+    const tips = [
+      "💡 <strong>Economist Tip:</strong> Opportunity cost is not everything you give up. It is the value of the <strong>best alternative forgone</strong>.",
+      "💡 <strong>Economist Tip:</strong> Sunk costs (like money already spent) should NOT affect rational future decisions.",
+      "💡 <strong>Economist Tip:</strong> On the PPC, points ON the curve = efficient, INSIDE = inefficient, OUTSIDE = unattainable.",
+      "💡 <strong>Economist Tip:</strong> Comparative advantage depends on who has the <strong>lower opportunity cost</strong>, not who is faster.",
+      "💡 <strong>Economist Tip:</strong> Expected Value = (Probability × Outcome) summed across all possibilities."
+    ];
+    const tip = tips[Math.floor(Math.random() * tips.length)];
+    const fb = document.getElementById(feedbackId);
+    if (fb) {
+      const existing = fb.innerHTML;
+      fb.innerHTML = `<div class="tip-box"><div class="tip-title">🎓 Economist Tip</div><div class="tip-text">${tip}</div></div>` + existing;
+    }
+  },
+
+  // ==================== HKDSE CHALLENGE ====================
+  toHKDSE() {
+    this.state.phase = 'hkdse';
+    this.saveState();
+    this.screen('hkdse');
+    this.renderHKDSE();
+  },
+
+  renderHKDSE() {
+    const main = document.getElementById('hkdse-main');
+    const q = HKDSE_QUESTIONS[this.state.hkdseIndex];
+    if (!q) { this.toReport(); return; }
+
+    let html = `<div class="calc-wrap fade-in">`;
+    html += `<div class="calc-title">Question ${this.state.hkdseIndex + 1} of ${HKDSE_QUESTIONS.length}</div>`;
+    html += `<div class="calc-text">${q.question}</div>`;
+    html += `<div class="calc-options">`;
+    q.options.forEach((opt, i) => {
+      html += `<button class="calc-option" onclick="G.answerHKDSE(${i})">${opt.text}</button>`;
+    });
+    html += `</div><div id="hkdse-feedback"></div></div>`;
+    main.innerHTML = html;
+  },
+
+  answerHKDSE(idx) {
+    const q = HKDSE_QUESTIONS[this.state.hkdseIndex];
+    const opt = q.options[idx];
+    const fb = document.getElementById('hkdse-feedback');
+    const btns = document.querySelectorAll('#hkdse-main .calc-option');
+
+    btns.forEach((b, i) => {
+      b.disabled = true;
+      if (i === idx) b.classList.add(opt.correct ? 'correct' : 'wrong');
+      if (q.options[i].correct) b.classList.add('correct');
+    });
+
+    this.state.totalQuestions++;
+    this.state.hkdseTotal++;
+    if (opt.correct) {
+      this.state.correctAnswers++;
+      this.state.hkdseCorrect++;
+      fb.innerHTML = `<div class="feedback-box correct">✅ Correct! ${q.explanation}</div>`;
+    } else {
+      fb.innerHTML = `<div class="feedback-box wrong">❌ Not quite. ${q.explanation}</div>`;
+      this.showTip('hkdse-feedback');
+    }
+
+    const isLast = this.state.hkdseIndex >= HKDSE_QUESTIONS.length - 1;
+    fb.innerHTML += `<button class="btn-primary" onclick="G.nextHKDSE()" style="margin-top:14px;">${isLast ? 'See Final Results →' : 'Next Question →'}</button>`;
+    this.saveState();
+  },
+
+  nextHKDSE() {
+    this.state.hkdseIndex++;
+    this.saveState();
+    if (this.state.hkdseIndex >= HKDSE_QUESTIONS.length) {
+      this.toReport();
+    } else {
+      this.renderHKDSE();
+    }
+  },
+
+  // ==================== FINAL REPORT ====================
+  toReport() {
+    this.state.phase = 'report';
+    this.saveState();
+    this.screen('report');
+    this.renderReport();
+  },
+
+  renderReport() {
+    const s = this.state;
+    const main = document.getElementById('report-main');
+
+    let bestDecision = s.eventHistory.reduce((best, h) => {
+      const score = (h.effects.knowledge || 0) + (h.effects.happiness || 0) + (h.effects.reputation || 0) + (h.effects.relationships || 0);
+      return score > best.score ? { event: h.eventTitle, choice: h.choiceText, score } : best;
+    }, { score: -999 });
+
+    const accuracy = s.totalQuestions > 0 ? Math.round((s.correctAnswers / s.totalQuestions) * 100) : 0;
+
+    let level = 1, stars = '⭐';
+    if (accuracy >= 90) { level = 5; stars = '⭐⭐⭐⭐⭐'; }
+    else if (accuracy >= 75) { level = 4; stars = '⭐⭐⭐⭐'; }
+    else if (accuracy >= 60) { level = 3; stars = '⭐⭐⭐'; }
+    else if (accuracy >= 40) { level = 2; stars = '⭐⭐'; }
+
+    const unlocked = ACHIEVEMENTS.filter(a => a.cond(s));
+    s.achievements = unlocked.map(a => a.id);
+
+    let profile = "Balanced Practitioner";
+    if (s.stats.knowledge >= 75 && s.stats.money >= 1000) profile = "Wealthy Intellectual";
+    else if (s.stats.knowledge >= 75) profile = "Academic Economist";
+    else if (s.stats.money >= 10000) profile = "Wealth Builder";
+    else if (s.stats.happiness >= 75 && s.stats.relationships >= 75) profile = "Life Optimiser";
+    else if (s.stats.reputation >= 75) profile = "Community Leader";
+    else if (s.stats.money < 0) profile = "Risk-Taking Visionary";
+
+    const statLabels = { money: 'Money', time: 'Time', knowledge: 'Knowledge', happiness: 'Happiness', relationships: 'Relations', reputation: 'Reputation' };
+    const lifeSummary = s.eventHistory.map((h, i) => {
+      const effects = Object.entries(h.effects).map(([key, value]) => {
+        const amount = key === 'money' ? this.fmtMoney(value) : (value > 0 ? '+' + value : value);
+        return `${statLabels[key]} ${amount}`;
+      }).join(' • ');
+      return `
+        <div class="report-item" style="display:block;">
+          <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px;">${i + 1}. ${h.eventTitle}</div>
+          <div class="card-text" style="font-size:13px;margin-bottom:8px;"><strong>Choice:</strong> ${h.choiceText}</div>
+          <div style="font-size:12px;color:var(--success);margin-bottom:6px;"><strong>Immediate effects:</strong> ${effects || 'None'}</div>
+          <div style="font-size:12px;color:var(--text-muted);"><strong>Opportunity cost:</strong> ${h.opportunityCost}</div>
+        </div>`;
+    }).join('');
+
+    let html = `
+      <div class="report-header fade-in">
+        <div class="report-emoji">📊</div>
+        <div class="report-title">Year 1 Complete</div>
+        <div class="report-subtitle">${s.name}, Age ${s.age} • ${profile}</div>
+      </div>
+
+      <div class="report-stats fade-in">
+        <div class="report-stat"><div class="report-stat-icon">💰</div><div class="report-stat-value">${this.fmtMoney(s.stats.money)}</div><div class="report-stat-label">Money</div></div>
+        <div class="report-stat"><div class="report-stat-icon">📚</div><div class="report-stat-value">${s.stats.knowledge}</div><div class="report-stat-label">Knowledge</div></div>
+        <div class="report-stat"><div class="report-stat-icon">😊</div><div class="report-stat-value">${s.stats.happiness}</div><div class="report-stat-label">Happiness</div></div>
+        <div class="report-stat"><div class="report-stat-icon">❤️</div><div class="report-stat-value">${s.stats.relationships}</div><div class="report-stat-label">Relations</div></div>
+      </div>
+
+      <div class="report-section fade-in">
+        <div class="report-section-title">📈 Economic Profile</div>
+        <div class="report-item"><span class="report-item-label">Best Decision</span><span class="report-item-value">${bestDecision.event || 'N/A'}</span></div>
+        <div class="report-item"><span class="report-item-label">Biggest Trade-off</span><span class="report-item-value">${s.biggestOpportunityCost ? s.biggestOpportunityCost.event : 'N/A'}</span></div>
+        <div class="report-item"><span class="report-item-label">Total Questions Accuracy</span><span class="report-item-value">${accuracy}%</span></div>
+        <div class="report-item"><span class="report-item-label">HKDSE Challenge</span><span class="report-item-value">${s.hkdseCorrect} / ${s.hkdseTotal}</span></div>
+        <div class="report-item"><span class="report-item-label">Calculation Score</span><span class="report-item-value">${s.calcCorrect} / ${s.calcTotal}</span></div>
+        <div class="report-item"><span class="report-item-label">Events Experienced</span><span class="report-item-value">${s.eventHistory.length} / ${EVENTS.length}</span></div>
+      </div>
+    `;
+
+    if (s.biggestOpportunityCost) {
+      html += `
+        <div class="report-section fade-in">
+          <div class="report-section-title">⚖️ Your Biggest Opportunity Cost</div>
+          <div class="card-text" style="margin-bottom:14px;">In <strong>${s.biggestOpportunityCost.event}</strong>, you chose to <strong>${s.biggestOpportunityCost.choice}</strong>.</div>
+          <div class="reflection-box" style="margin:0;">
+            <div class="reflection-text">
+              <strong>What you gave up:</strong> ${s.biggestOpportunityCost.cost}<br><br>
+              <em>This is the essence of economics: every choice means saying no to something else. The value of that "something else" is your opportunity cost.</em>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="report-section fade-in">
+        <div class="report-section-title">🧭 Your Life Summary</div>
+        <div class="card-text" style="margin-bottom:6px;">A record of the choices that shaped your journey, and what each decision meant giving up.</div>
+        ${lifeSummary || '<div class="card-text">No life events recorded.</div>'}
+      </div>
+
+      <div class="report-section fade-in">
+        <div class="report-section-title">🏆 Achievements Unlocked</div>
+        <div class="achievement-grid">
+    `;
+
+    ACHIEVEMENTS.forEach(a => {
+      const isUnlocked = s.achievements.includes(a.id);
+      html += `
+        <div class="achievement-card ${isUnlocked ? 'unlocked' : ''}">
+          <div class="achievement-emoji">${a.emoji}</div>
+          <div class="achievement-name">${a.name}</div>
+          <div class="achievement-desc">${a.desc}</div>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+
+      <div class="report-section fade-in" style="text-align:center;">
+        <div class="report-section-title">Economist Level</div>
+        <div class="stars">${stars}</div>
+        <div style="font-size:15px;color:var(--text-muted);margin-top:6px;">Level ${level} Economist</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-top:8px;">${accuracy >= 80 ? 'Outstanding understanding of economic principles!' : accuracy >= 60 ? 'Solid grasp of opportunity cost concepts.' : 'Keep practicing — economics takes time to master.'}</div>
+      </div>
+
+      <div style="padding:0 0 40px;display:flex;flex-direction:column;gap:12px;">
+        <button class="btn-primary" onclick="G.restart()">🔄 Play Again</button>
+        <button class="btn-secondary" onclick="G.showTeacherData()">📊 View Session Data</button>
+      </div>
+    `;
+
+    main.innerHTML = html;
+    this.saveState();
+  },
+
+  showTeacherData() {
+    const s = this.state;
+    const data = {
+      player: s.name,
+      age: s.age,
+      personality: s.personality,
+      finalStats: s.stats,
+      eventsCompleted: s.eventHistory.length,
+      questionsAttempted: s.totalQuestions,
+      questionsCorrect: s.correctAnswers,
+      accuracy: s.totalQuestions > 0 ? Math.round((s.correctAnswers / s.totalQuestions) * 100) : 0,
+      calcScore: `${s.calcCorrect}/${s.calcTotal}`,
+      hkdseScore: `${s.hkdseCorrect}/${s.hkdseTotal}`,
+      achievements: s.achievements,
+      biggestOpportunityCost: s.biggestOpportunityCost,
+      eventChoices: s.eventHistory.map(h => ({ event: h.eventTitle, choice: h.choiceText }))
+    };
+    alert('Session Data (copy this for your teacher):\n\n' + JSON.stringify(data, null, 2));
+  },
+
+  restart() {
+    this.clearState();
+    this.state = this.defaultState();
+    document.getElementById('char-name').value = '';
+    document.getElementById('char-age').value = '16';
+    document.querySelectorAll('.personality-card').forEach(c => c.classList.remove('selected'));
+    this.screen('start');
+  }
+};
+
+// Service Worker for offline play
+if ('serviceWorker' in navigator) {
+  const swCode = `
+    self.addEventListener('install', e => {
+      e.waitUntil(
+        caches.open('choice-game-v2').then(cache => {
+          return cache.addAll(['/']);
+        })
+      );
+      self.skipWaiting();
+    });
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        caches.match(e.request).then(response => {
+          return response || fetch(e.request);
+        })
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+// Initialize
+window.addEventListener('DOMContentLoaded', () => { G.init(); });
+</script>
+</body>
+</html>
